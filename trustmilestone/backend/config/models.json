@@ -1,0 +1,14 @@
+{
+  "criteria_generator": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "temperature": 0,
+    "response_format": "json"
+  },
+  "code_review_judge": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "temperature": 0,
+    "response_format": "json"
+  }
+}
