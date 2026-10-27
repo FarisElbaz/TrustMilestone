@@ -1,0 +1,52 @@
+{
+  "case": "c01",
+  "stack": "Node 20, Express, TypeScript, Jest, supertest",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Accept a product ID and quantity and create an order with a new ID and calculated total."
+    },
+    {
+      "id": "REQ-2",
+      "text": "Reject negative quantities with HTTP 400."
+    }
+  ],
+  "variants": [
+    {
+      "id": "V1_correct",
+      "change_description": "A different correct implementation of the same requirements.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    },
+    {
+      "id": "V2_subtle_bug",
+      "change_description": "Changes the negative-quantity check to reject zero as well.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "rejects a negative quantity"
+      ],
+      "requirements_affected": [
+        "REQ-2"
+      ]
+    },
+    {
+      "id": "V3_missing_feature",
+      "change_description": "Removes the product catalog entry required to create the tested order.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "creates an order with its total"
+      ],
+      "requirements_affected": [
+        "REQ-1"
+      ]
+    },
+    {
+      "id": "V4_ambiguous",
+      "change_description": "Adds an unrequested health endpoint.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    }
+  ]
+}

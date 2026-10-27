@@ -1,0 +1,3 @@
+import express from "express"; const app=express(); app.use(express.json());
+const prices:Record<string,number>={p1:100,p2:50}; const discounts:Record<string,number>={SAVE10:.1,SAVE20:.2};
+app.post("/orders/discount",(req,res)=>{const {productId,quantity,code}=req.body||{}; if(typeof productId!=="string"||typeof quantity!=="number"||quantity<=0)return res.status(400).json({error:"invalid order"}); if(prices[productId]===undefined)return res.status(404).json({error:"product not found"}); if(discounts[code]===null)return res.status(400).json({error:"invalid discount"}); const subtotal=prices[productId]*quantity; return res.json({subtotal,discount:subtotal*discounts[code],total:subtotal*(1-discounts[code])});}); export default app;

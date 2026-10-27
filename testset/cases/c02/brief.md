@@ -1,0 +1,1 @@
+I want to use a discount code when ordering a product. The price should be reduced by the valid code I provide, and I want to see the original amount, savings, and final amount. An unknown code should be refused.

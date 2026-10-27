@@ -1,0 +1,3 @@
+import express from "express"; const app=express(); app.use(express.json());
+const purchases:Record<string,string>={o1:"2026-10-10",o2:"2026-09-20"};
+app.post("/refunds",(req,res)=>{const {orderId,amount,today}=req.body||{}; const date=purchases[orderId]; if(!date)return res.status(404).json({error:"order not found"});  const age=(Date.parse(today)-Date.parse(date))/86400000; if(age<0||age>30)return res.status(400).json({error:"outside refund window"}); return res.status(201).json({orderId,amount,status:"refunded"});}); export default app;

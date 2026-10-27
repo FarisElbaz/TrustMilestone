@@ -1,0 +1,3 @@
+import express from "express"; const app=express(); app.use(express.json());
+const orders:Record<string,{status:string}>={o1:{status:"pending"},o2:{status:"shipped"},o3:{status:"cancelled"}};
+app.post("/orders/:id/cancel",(req,res)=>{const o=orders[req.params.id]; if(!o)return res.status(404).json({error:"not found"}); if(o.status!=="pending")return res.status(409).json({error:"cannot cancel"}); o.status="cancelled"; return res.json(o);}); export default app;
