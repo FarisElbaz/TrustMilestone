@@ -1,0 +1,13 @@
+{
+  "caseId": "c01",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-03T18:56:22.642Z",
+  "milestones": [],
+  "paypalResponses": [],
+  "authorizationId": "mock-auth-c01",
+  "authorizedAt": "2026-11-03T18:56:22.642Z",
+  "authorizationStatus": "VOIDED",
+  "authorizationExpirationTime": "2026-12-02T18:56:22.642Z",
+  "voidedAt": "2026-11-03T18:56:35.052Z"
+}

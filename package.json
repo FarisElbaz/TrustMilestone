@@ -4,7 +4,12 @@
   "scripts": {
     "build": "tsc",
     "test": "jest --runInBand",
-    "verify": "tsx src/cli.ts"
+    "verify": "tsx src/cli.ts",
+    "fund": "tsx scripts/fund.ts",
+    "payment:status": "tsx scripts/payment-status.ts",
+    "review": "tsx scripts/review.ts",
+    "smoke:capture": "tsx scripts/smoke-capture.ts",
+    "test:live": "tsx scripts/test-live.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1"

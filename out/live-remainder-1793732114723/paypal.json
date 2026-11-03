@@ -1,0 +1,17 @@
+{
+  "caseId": "live-remainder-1793732114723",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-03T18:55:14.726Z",
+  "milestones": [],
+  "paypalResponses": [
+    {
+      "operation": "create-order",
+      "status": "CREATED",
+      "recordedAt": "2026-11-03T18:55:16.415Z"
+    }
+  ],
+  "orderId": "83609896K7864740D",
+  "approvalUrl": "https://www.sandbox.paypal.com/checkoutnow?token=83609896K7864740D",
+  "orderStatus": "CREATED"
+}

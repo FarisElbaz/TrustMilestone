@@ -5,11 +5,13 @@ import { generateCriteria, ModelCall } from "./criteria";
 import { runTests } from "./sandbox";
 import { judgeCriterion, JudgeModelCall } from "./judge";
 import { route, CriterionOutcome, Decision } from "./route";
-import { milestone } from "./milestone";
+import { fundCase, holdMilestone, rejectMilestone, releaseMilestone, paymentStatus } from "./milestone";
+import { validatePaymentEnvironment } from "./paypal/config";
 
-export interface VerifyOptions { criteriaCall?: ModelCall; judgeCall?: JudgeModelCall; }
+export interface VerifyOptions { criteriaCall?: ModelCall; judgeCall?: JudgeModelCall; amount?: string; currency?: string; paymentCaseId?: string; }
 export async function verify(caseDir: string, submissionDir: string, options: VerifyOptions = {}): Promise<Decision> {
   const caseId = path.basename(caseDir);
+  validatePaymentEnvironment();
   const manifest = JSON.parse(await fs.readFile(path.join(caseDir, "manifest.json"), "utf8")) as { stack?: string };
   const brief = await fs.readFile(path.join(caseDir, "brief.md"), "utf8");
   const criteria = await generateCriteria(brief, manifest.stack ?? "Node 20", options.criteriaCall);
@@ -17,6 +19,11 @@ export async function verify(caseDir: string, submissionDir: string, options: Ve
   const metadata = { caseId, submissionPath: path.resolve(submissionDir), timestamp: new Date().toISOString(), models: { criteria_generator: config.criteria_generator.model, code_review_judge: config.code_review_judge.model } };
   const outDir = path.resolve("out", caseId);
   await fs.mkdir(outDir, { recursive: true });
+  if (options.currency) process.env.PAYPAL_CURRENCY = options.currency;
+  const amount = options.amount ?? process.env.PAYPAL_AMOUNT ?? "10.00";
+  const paymentCaseId = options.paymentCaseId ?? caseId;
+  if ((process.env.PAYMENT_MODE ?? "mock") === "mock") await fundCase(paymentCaseId, amount, options.currency);
+  else await paymentStatus(paymentCaseId);
   await fs.writeFile(path.join(outDir, "criteria.json"), JSON.stringify({ ...metadata, ...criteria }, null, 2));
   const outcomes: CriterionOutcome[] = [];
   const testCriteria = criteria.criteria.filter((criterion) => criterion.method === "test");
@@ -36,7 +43,8 @@ export async function verify(caseDir: string, submissionDir: string, options: Ve
   for (const criterion of criteria.criteria.filter((item) => item.method === "manual")) outcomes.push({ id: criterion.id, method: "manual", result: "unclear", evidence: "manual review required" });
   const decision = route(outcomes);
   await fs.writeFile(path.join(outDir, "result.json"), JSON.stringify({ ...metadata, ...decision, outcomes }, null, 2));
-  if (decision.decision === "release") await milestone.releaseMilestone(caseId, decision);
-  else await milestone.holdMilestone(caseId, decision);
+  if (decision.decision === "release") await releaseMilestone(paymentCaseId, amount);
+  else if (decision.decision === "reject") await rejectMilestone(paymentCaseId);
+  else await holdMilestone(paymentCaseId, new Date(Date.now() + 24 * 60 * 60 * 1000));
   return decision;
 }
