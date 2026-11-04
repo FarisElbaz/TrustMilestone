@@ -36,16 +36,25 @@ credentials in files or `NOTES.md`; funding and authorization state is stored in
 Run the sandbox workflow in this order:
 
 ```powershell
+npm run criteria -- --case c01
 npm run fund -- --case c01 --amount 10.00 --currency USD
 npm run payment:status -- --case c01
 npm run verify -- --case testset/cases/c01 --submission testset/cases/c01/reference
+npm run review -- --case c01 --decision release
 ```
+
+The criteria command asks the operator to approve or revise the LLM-generated
+criteria. Verification refuses to run until `out/<case-id>/criteria.json` has
+status `approved`. If verification escalates, it writes `review.json` and
+`review.md`; inspect the summary with `npm run review -- --case c01`, then
+resolve it with `--decision release` or `--decision reject`.
 
 Approve the printed order URL as `PAYPAL_BUYER_EMAIL` before running
 `payment:status`. The verifier then captures milestone 1 and sends the payout.
-For an escalation, resolve it with:
+For an escalation, inspect and resolve it with:
 
 ```powershell
+npm run review -- --case c01
 npm run review -- --case c01 --decision release
 ```
 
@@ -71,6 +80,38 @@ used for live behavior; mock mode is the default for local tests.
 
 The client ID and secret must come from the same **Sandbox REST app** in the
 PayPal Developer Dashboard. They are not the buyer, contractor, or business
-account password/email. The integration intentionally has no web UI, account
-provisioning, database, webhook listener, automatic balance API, or background
-retry job in this phase.
+account password/email. The integration has no account provisioning, database,
+webhook listener, automatic balance API, or background retry job in this phase.
+
+The commands use state files under `out/<case-id>/`, so the criteria and review
+services can be called from a future UI without coupling the UI to the CLI.
+
+## Local web interface
+
+The UI is a local demo only. It has no authentication and must not be exposed
+outside the machine. It refuses to start unless `PAYPAL_ENV=sandbox`; PayPal
+credentials remain on the server and are never sent to the browser.
+
+From the repository root:
+
+```powershell
+npm run ui
+```
+
+Or from `PayPalAI`:
+
+```powershell
+npm run ui
+```
+
+Open the printed `http://127.0.0.1:3000` URL. Run a full case in this order:
+
+1. Create a case with its request and stack/constraints.
+2. Generate, revise if needed, and approve criteria.
+3. Enter amount/currency and create the PayPal Sandbox buyer order.
+4. **Manual:** open the approval link and approve it with the configured sandbox buyer.
+5. Check status to record the authorization and expiration.
+6. Upload a submission folder or zip (maximum 50 MB).
+7. Run verification.
+8. If escalated, inspect the human-review panel and choose release or reject.
+9. After release, refresh payout status and inspect capture, batch, and item results.

@@ -44,6 +44,12 @@ const writeRecord = async (record: PayPalRecord) => {
   await fs.mkdir(path.dirname(recordPath(record.caseId)), { recursive: true });
   await fs.writeFile(recordPath(record.caseId), JSON.stringify(record, null, 2));
 };
+export async function markNeedsReview(caseId: string, reason: string): Promise<PayPalRecord> {
+  const record = await readRecord(caseId);
+  record.needsReview = reason;
+  await writeRecord(record);
+  return record;
+}
 const cents = (value: string) => Math.round(Number(value) * 100);
 function validateMoney(amount: string, currency: string): void {
   const problems = [...validateAmount(amount), ...validateCurrency(currency).map((problem) => problem.replace("PAYPAL_CURRENCY", "currency"))];

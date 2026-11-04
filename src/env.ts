@@ -25,7 +25,6 @@ export function loadEnvironment(): void {
       const entry = parseLine(line);
       if (entry && !process.env[entry[0]]) process.env[entry[0]] = entry[1];
     }
-    break;
   }
   const aliases: Record<string, string> = {
     BUYER_EMAIL: "PAYPAL_BUYER_EMAIL",

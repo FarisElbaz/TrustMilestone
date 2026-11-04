@@ -1,11 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { loadConfig } from "./config";
-import { generateCriteria, ModelCall } from "./criteria";
+import { ModelCall } from "./criteria";
+import { readStoredCriteria } from "./criteria-approval";
 import { runTests } from "./sandbox";
 import { judgeCriterion, JudgeModelCall } from "./judge";
 import { route, CriterionOutcome, Decision } from "./route";
-import { fundCase, holdMilestone, rejectMilestone, releaseMilestone, paymentStatus } from "./milestone";
+import { fundCase, getPaymentRecord, holdMilestone, rejectMilestone, releaseMilestone, paymentStatus } from "./milestone";
+import { writeEscalationReview } from "./review-handoff";
 import { validatePaymentEnvironment } from "./paypal/config";
 
 export interface VerifyOptions { criteriaCall?: ModelCall; judgeCall?: JudgeModelCall; amount?: string; currency?: string; paymentCaseId?: string; }
@@ -13,8 +15,8 @@ export async function verify(caseDir: string, submissionDir: string, options: Ve
   const caseId = path.basename(caseDir);
   validatePaymentEnvironment();
   const manifest = JSON.parse(await fs.readFile(path.join(caseDir, "manifest.json"), "utf8")) as { stack?: string };
-  const brief = await fs.readFile(path.join(caseDir, "brief.md"), "utf8");
-  const criteria = await generateCriteria(brief, manifest.stack ?? "Node 20", options.criteriaCall);
+  const criteria = await readStoredCriteria(caseId);
+  if (criteria.status !== "approved") throw new Error(`Criteria for case ${caseId} must be approved before verification (status: ${criteria.status}).`);
   const config = loadConfig();
   const metadata = { caseId, submissionPath: path.resolve(submissionDir), timestamp: new Date().toISOString(), models: { criteria_generator: config.criteria_generator.model, code_review_judge: config.code_review_judge.model } };
   const outDir = path.resolve("out", caseId);
@@ -24,7 +26,6 @@ export async function verify(caseDir: string, submissionDir: string, options: Ve
   const paymentCaseId = options.paymentCaseId ?? caseId;
   if ((process.env.PAYMENT_MODE ?? "mock") === "mock") await fundCase(paymentCaseId, amount, options.currency);
   else await paymentStatus(paymentCaseId);
-  await fs.writeFile(path.join(outDir, "criteria.json"), JSON.stringify({ ...metadata, ...criteria }, null, 2));
   const outcomes: CriterionOutcome[] = [];
   const testCriteria = criteria.criteria.filter((criterion) => criterion.method === "test");
   if (testCriteria.length > 0) {
@@ -45,6 +46,9 @@ export async function verify(caseDir: string, submissionDir: string, options: Ve
   await fs.writeFile(path.join(outDir, "result.json"), JSON.stringify({ ...metadata, ...decision, outcomes }, null, 2));
   if (decision.decision === "release") await releaseMilestone(paymentCaseId, amount);
   else if (decision.decision === "reject") await rejectMilestone(paymentCaseId);
-  else await holdMilestone(paymentCaseId, new Date(Date.now() + 24 * 60 * 60 * 1000));
+  else {
+    await holdMilestone(paymentCaseId, new Date(Date.now() + 24 * 60 * 60 * 1000));
+    await writeEscalationReview(caseId, path.resolve(submissionDir), outcomes, await getPaymentRecord(paymentCaseId));
+  }
   return decision;
 }
