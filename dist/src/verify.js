@@ -7,18 +7,20 @@ exports.verify = verify;
 const promises_1 = __importDefault(require("node:fs/promises"));
 const node_path_1 = __importDefault(require("node:path"));
 const config_1 = require("./config");
-const criteria_1 = require("./criteria");
+const criteria_approval_1 = require("./criteria-approval");
 const sandbox_1 = require("./sandbox");
 const judge_1 = require("./judge");
 const route_1 = require("./route");
 const milestone_1 = require("./milestone");
+const review_handoff_1 = require("./review-handoff");
 const config_2 = require("./paypal/config");
 async function verify(caseDir, submissionDir, options = {}) {
     const caseId = node_path_1.default.basename(caseDir);
     (0, config_2.validatePaymentEnvironment)();
     const manifest = JSON.parse(await promises_1.default.readFile(node_path_1.default.join(caseDir, "manifest.json"), "utf8"));
-    const brief = await promises_1.default.readFile(node_path_1.default.join(caseDir, "brief.md"), "utf8");
-    const criteria = await (0, criteria_1.generateCriteria)(brief, manifest.stack ?? "Node 20", options.criteriaCall);
+    const criteria = await (0, criteria_approval_1.readStoredCriteria)(caseId);
+    if (criteria.status !== "approved")
+        throw new Error(`Criteria for case ${caseId} must be approved before verification (status: ${criteria.status}).`);
     const config = (0, config_1.loadConfig)();
     const metadata = { caseId, submissionPath: node_path_1.default.resolve(submissionDir), timestamp: new Date().toISOString(), models: { criteria_generator: config.criteria_generator.model, code_review_judge: config.code_review_judge.model } };
     const outDir = node_path_1.default.resolve("out", caseId);
@@ -31,7 +33,6 @@ async function verify(caseDir, submissionDir, options = {}) {
         await (0, milestone_1.fundCase)(paymentCaseId, amount, options.currency);
     else
         await (0, milestone_1.paymentStatus)(paymentCaseId);
-    await promises_1.default.writeFile(node_path_1.default.join(outDir, "criteria.json"), JSON.stringify({ ...metadata, ...criteria }, null, 2));
     const outcomes = [];
     const testCriteria = criteria.criteria.filter((criterion) => criterion.method === "test");
     if (testCriteria.length > 0) {
@@ -55,7 +56,9 @@ async function verify(caseDir, submissionDir, options = {}) {
         await (0, milestone_1.releaseMilestone)(paymentCaseId, amount);
     else if (decision.decision === "reject")
         await (0, milestone_1.rejectMilestone)(paymentCaseId);
-    else
+    else {
         await (0, milestone_1.holdMilestone)(paymentCaseId, new Date(Date.now() + 24 * 60 * 60 * 1000));
+        await (0, review_handoff_1.writeEscalationReview)(caseId, node_path_1.default.resolve(submissionDir), outcomes, await (0, milestone_1.getPaymentRecord)(paymentCaseId));
+    }
     return decision;
 }

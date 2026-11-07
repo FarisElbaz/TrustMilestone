@@ -1,0 +1,17 @@
+{
+  "caseId": "c10",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-04T13:34:25.470Z",
+  "milestones": [],
+  "paypalResponses": [
+    {
+      "operation": "create-order",
+      "status": "CREATED",
+      "recordedAt": "2026-11-04T13:34:27.409Z"
+    }
+  ],
+  "orderId": "0Y492932N8650972V",
+  "approvalUrl": "https://www.sandbox.paypal.com/checkoutnow?token=0Y492932N8650972V",
+  "orderStatus": "CREATED"
+}

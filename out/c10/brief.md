@@ -1,0 +1,1 @@
+I want a calculator webapp that has blue and green gradients and only does addition and subtraction

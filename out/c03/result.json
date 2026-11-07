@@ -1,0 +1,20 @@
+{
+  "caseId": "c03",
+  "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\testset\\cases\\c01\\reference",
+  "timestamp": "2026-11-04T12:51:58.350Z",
+  "models": {
+    "criteria_generator": "gemini-3.8-flash",
+    "code_review_judge": "gemini-3.8-flash"
+  },
+  "decision": "escalate",
+  "failingCriteria": [],
+  "evidence": [],
+  "outcomes": [
+    {
+      "id": "C1",
+      "method": "manual",
+      "result": "unclear",
+      "evidence": "manual review required"
+    }
+  ]
+}

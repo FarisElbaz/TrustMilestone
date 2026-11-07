@@ -1,0 +1,16 @@
+{
+  "caseId": "c03",
+  "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\testset\\cases\\c01\\reference",
+  "escalatedAt": "2026-11-04T12:51:58.354Z",
+  "criteria": [
+    {
+      "id": "C1",
+      "verdict": "unclear",
+      "reason": "Manual review is required.",
+      "evidence": "manual review required"
+    }
+  ],
+  "authorizationId": "mock-auth-c03",
+  "expirationTime": "2026-12-03T12:51:58.350Z",
+  "status": "pending"
+}

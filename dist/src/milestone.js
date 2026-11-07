@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.milestone = void 0;
 exports.getPaymentRecord = getPaymentRecord;
+exports.markNeedsReview = markNeedsReview;
 exports.fundCase = fundCase;
 exports.paymentStatus = paymentStatus;
 exports.releaseMilestone = releaseMilestone;
@@ -43,6 +44,12 @@ const writeRecord = async (record) => {
     await promises_1.default.mkdir(node_path_1.default.dirname(recordPath(record.caseId)), { recursive: true });
     await promises_1.default.writeFile(recordPath(record.caseId), JSON.stringify(record, null, 2));
 };
+async function markNeedsReview(caseId, reason) {
+    const record = await readRecord(caseId);
+    record.needsReview = reason;
+    await writeRecord(record);
+    return record;
+}
 const cents = (value) => Math.round(Number(value) * 100);
 function validateMoney(amount, currency) {
     const problems = [...(0, config_1.validateAmount)(amount), ...(0, config_1.validateCurrency)(currency).map((problem) => problem.replace("PAYPAL_CURRENCY", "currency"))];

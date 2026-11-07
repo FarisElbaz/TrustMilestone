@@ -33,7 +33,6 @@ function loadEnvironment() {
             if (entry && !process.env[entry[0]])
                 process.env[entry[0]] = entry[1];
         }
-        break;
     }
     const aliases = {
         BUYER_EMAIL: "PAYPAL_BUYER_EMAIL",
