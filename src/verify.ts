@@ -10,7 +10,7 @@ import { fundCase, getPaymentRecord, holdMilestone, rejectMilestone, releaseMile
 import { writeEscalationReview } from "./review-handoff";
 import { validatePaymentEnvironment } from "./paypal/config";
 
-export interface VerifyOptions { criteriaCall?: ModelCall; judgeCall?: JudgeModelCall; amount?: string; currency?: string; paymentCaseId?: string; }
+export interface VerifyOptions { criteriaCall?: ModelCall; judgeCall?: JudgeModelCall; amount?: string; currency?: string; paymentCaseId?: string; buyerEmail?: string; contractorEmail?: string; }
 export async function verify(caseDir: string, submissionDir: string, options: VerifyOptions = {}): Promise<Decision> {
   const caseId = path.basename(caseDir);
   validatePaymentEnvironment();
@@ -25,7 +25,7 @@ export async function verify(caseDir: string, submissionDir: string, options: Ve
   const amount = options.amount ?? process.env.PAYPAL_AMOUNT ?? "10.00";
   const paymentCaseId = options.paymentCaseId ?? caseId;
   if ((process.env.PAYMENT_MODE ?? "mock") === "mock") await fundCase(paymentCaseId, amount, options.currency);
-  else await paymentStatus(paymentCaseId);
+  else await paymentStatus(paymentCaseId, options.buyerEmail);
   const outcomes: CriterionOutcome[] = [];
   const testCriteria = criteria.criteria.filter((criterion) => criterion.method === "test");
   if (testCriteria.length > 0) {
@@ -44,7 +44,7 @@ export async function verify(caseDir: string, submissionDir: string, options: Ve
   for (const criterion of criteria.criteria.filter((item) => item.method === "manual")) outcomes.push({ id: criterion.id, method: "manual", result: "unclear", evidence: "manual review required" });
   const decision = route(outcomes);
   await fs.writeFile(path.join(outDir, "result.json"), JSON.stringify({ ...metadata, ...decision, outcomes }, null, 2));
-  if (decision.decision === "release") await releaseMilestone(paymentCaseId, amount);
+  if (decision.decision === "release") await releaseMilestone(paymentCaseId, amount, 1, options.contractorEmail);
   else if (decision.decision === "reject") await rejectMilestone(paymentCaseId);
   else {
     await holdMilestone(paymentCaseId, new Date(Date.now() + 24 * 60 * 60 * 1000));

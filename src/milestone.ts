@@ -89,7 +89,7 @@ export async function fundCase(caseId: string, amount: string, currency = proces
   await writeRecord(record); return record;
 }
 
-export async function paymentStatus(caseId: string): Promise<PayPalRecord> {
+export async function paymentStatus(caseId: string, buyerEmail = process.env.PAYPAL_BUYER_EMAIL): Promise<PayPalRecord> {
   const record = await readRecord(caseId);
   if (paymentMode() === "mock") return record;
   assertSandbox();
@@ -97,7 +97,7 @@ export async function paymentStatus(caseId: string): Promise<PayPalRecord> {
   if (!record.orderId) throw new Error(`No PayPal order is recorded for ${caseId}.`);
   const order = await getOrder(record.orderId);
   record.orderStatus = order.status; observe(record, "show-order", order.status, "order");
-  if (order.payerEmail && process.env.PAYPAL_BUYER_EMAIL && order.payerEmail.toLowerCase() !== process.env.PAYPAL_BUYER_EMAIL.toLowerCase()) {
+  if (order.payerEmail && buyerEmail && order.payerEmail.toLowerCase() !== buyerEmail.toLowerCase()) {
     await writeRecord(record); throw new Error("PayPal payer email does not match PAYPAL_BUYER_EMAIL.");
   }
   if (order.status !== "APPROVED") { await writeRecord(record); throw new Error(`PayPal order ${record.orderId} is not approved (status: ${order.status}).`); }
@@ -121,7 +121,7 @@ async function requireAuthorized(caseId: string): Promise<PayPalRecord> {
   return record;
 }
 
-export async function releaseMilestone(caseId: string, amount: string, milestoneNumber = 1): Promise<void> {
+export async function releaseMilestone(caseId: string, amount: string, milestoneNumber = 1, contractorEmail = process.env.PAYPAL_CONTRACTOR_EMAIL): Promise<void> {
   const record = await requireAuthorized(caseId); validateMoney(amount, record.currency);
   if (record.milestones.some((item) => item.number === milestoneNumber)) throw new Error(`Milestone ${milestoneNumber} has already been recorded.`);
   if (record.currency !== (record.authorizationCurrency ?? record.currency)) throw new Error("Currency differs from the authorized order.");
@@ -137,7 +137,7 @@ export async function releaseMilestone(caseId: string, amount: string, milestone
     observe(record, "capture", capture.status, "capture");
     record.milestones.push(item);
     await writeRecord(record);
-    const submittedPayout = await sendPayout(caseId, process.env.PAYPAL_CONTRACTOR_EMAIL ?? "", amount, record.currency, milestoneNumber);
+    const submittedPayout = await sendPayout(caseId, contractorEmail ?? "", amount, record.currency, milestoneNumber);
     if (!submittedPayout.batchId || !submittedPayout.batchStatus) throw new Error("PayPal payout response was incomplete.");
     item.payoutBatchId = submittedPayout.batchId;
     item.payoutStatus = submittedPayout.batchStatus;

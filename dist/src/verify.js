@@ -32,7 +32,7 @@ async function verify(caseDir, submissionDir, options = {}) {
     if ((process.env.PAYMENT_MODE ?? "mock") === "mock")
         await (0, milestone_1.fundCase)(paymentCaseId, amount, options.currency);
     else
-        await (0, milestone_1.paymentStatus)(paymentCaseId);
+        await (0, milestone_1.paymentStatus)(paymentCaseId, options.buyerEmail);
     const outcomes = [];
     const testCriteria = criteria.criteria.filter((criterion) => criterion.method === "test");
     if (testCriteria.length > 0) {
@@ -53,7 +53,7 @@ async function verify(caseDir, submissionDir, options = {}) {
     const decision = (0, route_1.route)(outcomes);
     await promises_1.default.writeFile(node_path_1.default.join(outDir, "result.json"), JSON.stringify({ ...metadata, ...decision, outcomes }, null, 2));
     if (decision.decision === "release")
-        await (0, milestone_1.releaseMilestone)(paymentCaseId, amount);
+        await (0, milestone_1.releaseMilestone)(paymentCaseId, amount, 1, options.contractorEmail);
     else if (decision.decision === "reject")
         await (0, milestone_1.rejectMilestone)(paymentCaseId);
     else {

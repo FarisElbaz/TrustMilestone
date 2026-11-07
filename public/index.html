@@ -1,62 +1,25 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Delivery verifier</title>
   <style>
-    :root { color-scheme: dark; font: 15px system-ui, sans-serif; background: #0c1220; color: #eef4ff; }
-    * { box-sizing: border-box; } body { margin: 0; } main { max-width: 1180px; margin: auto; padding: 28px; }
-    header { display: flex; justify-content: space-between; gap: 20px; align-items: end; margin-bottom: 24px; }
-    h1 { margin: 0 0 6px; font-size: 34px; } h2 { margin-top: 0; } h3 { margin-bottom: 8px; }
-    .muted { color: #9babbe; } .grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
-    .panel, .case { background: #141d2d; border: 1px solid #293a52; border-radius: 12px; padding: 18px; margin-bottom: 14px; }
-    .case { cursor: pointer; } .case:hover, .case.active { border-color: #57d8c0; } .case strong { display: block; margin-bottom: 6px; }
-    label { display: grid; gap: 7px; color: #aebdd0; margin: 12px 0; } input, textarea, select { width: 100%; padding: 10px; border: 1px solid #3a4b64; border-radius: 7px; background: #0d1523; color: inherit; font: inherit; }
-    textarea { min-height: 100px; resize: vertical; } button { border: 0; border-radius: 7px; padding: 10px 13px; background: #59dfc4; color: #062824; font-weight: 700; cursor: pointer; margin: 4px 4px 4px 0; } button:disabled { opacity: .4; cursor: not-allowed; }
-    button.secondary { background: #29476a; color: #e4efff; } button.danger { background: #713343; color: #ffe2e7; }
-    .badge { display: inline-block; padding: 4px 8px; border-radius: 99px; background: #24405a; color: #9ff7df; font-size: 12px; } .hidden { display: none; }
-    .criterion, pre, .notice { padding: 12px; border-radius: 8px; background: #0c1525; margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-    .actions { margin-top: 12px; } .error { background: #562b38; color: #ffdce3; padding: 12px; border-radius: 8px; margin-bottom: 14px; }
-    a { color: #72e8ff; } .timeline { border-left: 2px solid #38516d; padding-left: 14px; }
-    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } header { display: block; } }
+    :root{font:15px system-ui,sans-serif;color:#eef4ff;background:#0c1220}*{box-sizing:border-box}main{max-width:1100px;margin:auto;padding:28px}.grid{display:grid;grid-template-columns:280px 1fr;gap:18px}.panel{background:#141d2d;border:1px solid #293a52;border-radius:12px;padding:18px;margin-bottom:14px}label{display:grid;gap:6px;margin:10px 0;color:#aebdd0}input,textarea,select{width:100%;padding:9px;background:#0d1523;color:inherit;border:1px solid #3a4b64;border-radius:6px}textarea{min-height:90px}button{padding:9px 12px;border:0;border-radius:6px;background:#59dfc4;color:#062824;font-weight:700;margin:3px;cursor:pointer}.muted{color:#9babbe}.error{background:#562b38;padding:10px;border-radius:6px;margin:10px 0}.case{padding:10px;border:1px solid #293a52;border-radius:6px;margin:6px 0;cursor:pointer}.badge{color:#9ff7df}.hidden{display:none}@media(max-width:750px){.grid{grid-template-columns:1fr}}
   </style>
 </head>
-<body>
-<main>
-  <header><div><h1>Delivery verifier</h1><div class="muted">Local demo only · no authentication · PayPal credentials stay on the server</div></div><button id="refresh">Refresh cases</button></header>
+<body><main>
+  <header><h1>Delivery verifier</h1><p class="muted">Hosted multi-user delivery verification</p></header>
   <div id="error" class="error hidden"></div>
-  <div class="grid">
-    <aside><section class="panel"><h2>Cases</h2><div id="cases"></div></section><section class="panel"><h3>New case</h3><form id="new-case"><label>Case ID<input name="caseId" pattern="[A-Za-z0-9._-]+" required></label><label>Client request<textarea name="brief" required></textarea></label><label>Stack and constraints<textarea name="stack" required>Node 20</textarea></label><button>Create case</button></form></section></aside>
-    <section id="detail"><div class="panel muted">Select a case to begin.</div></section>
-  </div>
-</main>
-<script>
-const $ = id => document.getElementById(id);
-let selected;
-function error(message) { $("error").textContent = message; $("error").classList.remove("hidden"); }
-function clearError() { $("error").classList.add("hidden"); }
-async function api(url, options) { const r = await fetch(url, { headers: { "Content-Type": "application/json", ...(options?.headers || {}) }, ...options }); const b = await r.json(); if (!r.ok) throw new Error(b.error || "Request failed."); return b; }
-async function loadCases() { const cases = await api("/api/cases"); $("cases").innerHTML = cases.length ? cases.map(c => `<div class="case ${c.caseId === selected ? "active" : ""}" data-id="${c.caseId}"><strong>${c.caseId}</strong><span class="badge">${c.stage}</span></div>`).join("") : "<p class='muted'>No cases yet.</p>"; document.querySelectorAll(".case").forEach(e => e.onclick = () => selectCase(e.dataset.id)); }
-async function selectCase(id) { selected = id; clearError(); await loadCases(); render(await api("/api/cases/" + encodeURIComponent(id))); }
-function button(label, action, disabled = false, cls = "") { return `<button class="${cls}" data-action="${action}" ${disabled ? "disabled" : ""}>${label}</button>`; }
-function render(c) {
-  const criteria = c.criteria || {}; const payment = c.payment || {}; const result = c.result || {}; const review = c.review || {};
-  const approved = criteria.status === "approved"; const authorized = Boolean(payment.authorizationId); const submitted = c.submission;
-  $("detail").innerHTML = `<section class="panel"><h2>${c.caseId} <span class="badge">${c.stage}</span></h2><p class="muted">Buyer: ${c.buyerEmail || "not configured"}</p></section>
-  <section class="panel"><h3>1 · Criteria</h3><p>Status: <b>${criteria.status || "not generated"}</b> ${criteria.approvedBy ? `· approved by ${criteria.approvedBy}` : ""}</p>${(criteria.criteria || []).map(x => `<div class="criterion"><b>${x.id}</b> · ${x.criterion}<br><span class="muted">${x.method}</span></div>`).join("")}<p class="muted">${(criteria.open_questions || []).map(x => "Open question: " + x.question).join("<br>")}</p>${button("Generate criteria", "criteria", false)} ${button("Approve criteria", "approve", !criteria.criteria?.length || approved)}<label>Revision note<input id="revision-note"></label>${button("Revise criteria", "revise", false, "secondary")}</section>
-  <section class="panel"><h3>2 · Funding</h3><p>Order: ${payment.orderId || "not created"} · Authorization: ${payment.authorizationId || "not recorded"}</p>${payment.approvalUrl ? `<p><a href="${payment.approvalUrl}" target="_blank" rel="noreferrer">Approve order in PayPal Sandbox</a></p><p class="muted">Approve using the configured sandbox buyer account: ${c.buyerEmail}. Confirm that this is the buyer approving the order.</p>` : ""}<label>Amount<input id="amount" value="${payment.amount || "10.00"}"></label><label>Currency<input id="currency" value="${payment.currency || "USD"}"></label>${button("Create buyer order", "fund", Boolean(payment.orderId), "secondary")} ${button("Check status", "status", !payment.orderId || authorized, "secondary")} ${authorized ? `<p>Expires: ${payment.authorizationExpirationTime || "unknown"}</p>` : ""}</section>
-  <section class="panel"><h3>3 · Submission</h3><form id="upload"><input type="file" name="files" multiple webkitdirectory directory><p class="muted">Upload a folder or zip, maximum 50 MB. Files are stored under out/${c.caseId}/submission/.</p><button>Upload submission</button></form><pre>${c.submission ? "Submission files uploaded." : "No submission uploaded."}</pre></section>
-  <section class="panel"><h3>4 · Verification</h3>${result.outcomes ? result.outcomes.map(x => `<div class="criterion"><b>${x.id}: ${x.result}</b><br>${JSON.stringify(x.evidence)}</div>`).join("") : "<p class='muted'>Not run.</p>"}<p>Decision: <b>${result.decision || "not run"}</b></p>${button("Run verifier", "verify", !approved || !authorized || !submitted)}<p class="muted">${!approved ? "Approve criteria first." : !authorized ? "Authorize the PayPal order first." : !submitted ? "Upload a submission first." : ""}</p></section>
-  ${result.decision === "escalate" ? `<section class="panel"><h3>5 · Human review</h3><pre>${review.status || "pending"} · ${review.remaining?.text || ""}</pre>${review.markdown || ""}${button("Release", "release", review.status !== "pending")} ${button("Reject", "reject", review.status !== "pending", "danger")}</section>` : ""}
-  <section class="panel"><h3>Results and history</h3>${payment.milestones?.map(x => `<p>Capture: ${x.captureId || "—"} · Payout: ${x.payoutBatchId || "—"} · ${x.payoutStatus || ""} ${x.payoutItemStatuses?.join(", ") || ""}${x.payoutNote ? `<br>${x.payoutNote}` : ""}</p>`).join("") || ""}${button("Refresh payout", "payout", !payment.milestones?.length, "secondary")}<div class="timeline">${(c.events || []).map(x => `<p><b>${x.timestamp}</b> · ${x.event} ${x.status || ""}</p>`).join("")}</div></section>`;
-  document.querySelectorAll("[data-action]").forEach(b => b.onclick = () => action(b.dataset.action));
-  $("upload").onsubmit = upload;
-}
-async function action(name) { try { clearError(); const base = "/api/cases/" + encodeURIComponent(selected); let body; let url = name === "approve" ? base + "/criteria/approve" : base + "/" + name; if (name === "fund") body = JSON.stringify({ amount: $("amount").value, currency: $("currency").value }); if (name === "revise") body = JSON.stringify({ note: $("revision-note").value }); if (name === "release" || name === "reject") { url = base + "/review"; body = JSON.stringify({ decision: name }); } await api(url, { method: "POST", body }); await selectCase(selected); } catch (e) { error(e.message); } }
-async function upload(e) { e.preventDefault(); try { clearError(); const data = new FormData($("upload")); const r = await fetch("/api/cases/" + encodeURIComponent(selected) + "/upload", { method: "POST", body: data }); const b = await r.json(); if (!r.ok) throw new Error(b.error); await selectCase(selected); } catch (e) { error(e.message); } }
-$("new-case").onsubmit = async e => { e.preventDefault(); try { clearError(); const f = new FormData(e.target); const c = await api("/api/cases/" + encodeURIComponent(f.get("caseId")) + "/create", { method: "POST", body: JSON.stringify({ brief: f.get("brief"), stack: f.get("stack") }) }); selected = c.caseId; await loadCases(); render(c); e.target.reset(); } catch (x) { error(x.message); } };
-$("refresh").onclick = () => loadCases().catch(e => error(e.message)); loadCases().catch(e => error(e.message));
-</script>
-</body>
-</html>
+  <section id="auth" class="panel"><h2>Sign in</h2><form id="login"><label>Email<input name="email" type="email" required></label><label>Password<input name="password" type="password" required></label><button>Log in</button></form><hr><h3>Create account</h3><form id="signup"><label>Name<input name="name" required></label><label>Email<input name="email" type="email" required></label><label>Password<input name="password" type="password" minlength="10" required></label><label>Role<select name="role"><option>client</option><option>worker</option><option>reviewer</option></select></label><label>PayPal sandbox email<input name="paypalEmail" type="email" required></label><button>Sign up</button></form></section>
+  <section id="app" class="hidden"><p>Signed in as <b id="identity"></b> <button id="logout">Log out</button></p><div class="grid"><aside><section class="panel"><h2>Cases</h2><div id="cases"></div></section><section id="new-case" class="panel"><h3>New case</h3><form><label>Case ID<input name="id" pattern="[A-Za-z0-9._-]+" required></label><label>Brief<textarea name="brief" required></textarea></label><label>Stack<input name="stack" value="Node 20" required></label><label>Worker email<input name="workerEmail" type="email" required></label><button>Create case</button></form></section></aside><section id="detail"><div class="panel muted">Select a case.</div></section></div></section>
+</main><script>
+const $=id=>document.getElementById(id);let csrf="",selected="";
+function showError(e){$("error").textContent=e.message||e;$("error").classList.remove("hidden")}function clearError(){$("error").classList.add("hidden")}
+async function api(url,options={}){options.headers={"Content-Type":"application/json","x-csrf-token":csrf,...(options.headers||{})};const r=await fetch(url,options);csrf=r.headers.get("x-csrf-token")||csrf;const b=r.status===204?{}:await r.json();if(!r.ok)throw Error(b.error||"Request failed");return b}
+async function refresh(){const rows=await api("/api/cases");$("cases").innerHTML=rows.length?rows.map(c=>`<div class="case" data-id="${c.id}"><b>${c.id}</b><br><span class="badge">${c.status}</span></div>`).join(""):"<p class='muted'>No cases yet.</p>";document.querySelectorAll(".case").forEach(x=>x.onclick=()=>loadCase(x.dataset.id))}
+async function loadCase(id){selected=id;const c=await api("/api/cases/"+encodeURIComponent(id));$("detail").innerHTML=`<section class="panel"><h2>${c.id}</h2><p>${c.brief}</p><p class="muted">${c.stack}</p><h3>Criteria</h3><p>${c.criteria?.status||"not generated"}</p><button onclick="action('criteria')">Generate criteria</button><button onclick="action('approve')">Approve criteria</button><h3>Funding</h3><p>${c.payment?.orderId||"not funded"} ${c.payment?.authorizationId||""}</p><button onclick="action('fund')">Fund</button><button onclick="action('status')">Check PayPal status</button><h3>Submission</h3><form id="upload"><input type="file" name="files" multiple><button>Upload</button></form><button onclick="action('verify')">Run verification</button></section>`;$("upload").onsubmit=async e=>{e.preventDefault();try{const r=await fetch("/api/cases/"+selected+"/upload",{method:"POST",headers:{"x-csrf-token":csrf},body:new FormData(e.target)});csrf=r.headers.get("x-csrf-token")||csrf;if(!r.ok)throw Error((await r.json()).error);await loadCase(selected)}catch(e){showError(e)}}}
+async function action(name){try{const body=name==="fund"?JSON.stringify({amount:"10.00",currency:"USD"}):undefined;await api("/api/cases/"+selected+"/"+name,{method:"POST",body});await loadCase(selected);await refresh()}catch(e){showError(e)}}
+async function signedIn(){try{const m=await api("/api/auth/me");$("auth").classList.add("hidden");$("app").classList.remove("hidden");$("identity").textContent=`${m.user.name} (${m.user.role})`;if(m.user.role!=="client")$("new-case").classList.add("hidden");await refresh()}catch{}}
+async function auth(form,path){try{const data=Object.fromEntries(new FormData(form));const m=await api(path,{method:"POST",body:JSON.stringify(data)});csrf=m.csrf||csrf;await signedIn()}catch(e){showError(e)}}
+$("login").onsubmit=e=>{e.preventDefault();auth(e.target,"/api/auth/login")};$("signup").onsubmit=e=>{e.preventDefault();auth(e.target,"/api/auth/signup")};$("logout").onclick=async()=>{await api("/api/auth/logout",{method:"POST"});location.reload()};$("new-case").querySelector("form").onsubmit=async e=>{e.preventDefault();try{await api("/api/cases",{method:"POST",body:JSON.stringify(Object.fromEntries(new FormData(e.target)))});e.target.reset();await refresh()}catch(x){showError(x)}};fetch("/health").then(r=>{csrf=r.headers.get("x-csrf-token")||"";return signedIn()});
+</script></body></html>

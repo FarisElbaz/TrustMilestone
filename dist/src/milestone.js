@@ -99,7 +99,7 @@ async function fundCase(caseId, amount, currency = process.env.PAYPAL_CURRENCY ?
     await writeRecord(record);
     return record;
 }
-async function paymentStatus(caseId) {
+async function paymentStatus(caseId, buyerEmail = process.env.PAYPAL_BUYER_EMAIL) {
     const record = await readRecord(caseId);
     if (paymentMode() === "mock")
         return record;
@@ -111,7 +111,7 @@ async function paymentStatus(caseId) {
     const order = await (0, orders_1.getOrder)(record.orderId);
     record.orderStatus = order.status;
     observe(record, "show-order", order.status, "order");
-    if (order.payerEmail && process.env.PAYPAL_BUYER_EMAIL && order.payerEmail.toLowerCase() !== process.env.PAYPAL_BUYER_EMAIL.toLowerCase()) {
+    if (order.payerEmail && buyerEmail && order.payerEmail.toLowerCase() !== buyerEmail.toLowerCase()) {
         await writeRecord(record);
         throw new Error("PayPal payer email does not match PAYPAL_BUYER_EMAIL.");
     }
@@ -146,7 +146,7 @@ async function requireAuthorized(caseId) {
         throw new Error(`Authorization for ${caseId} has expired.`);
     return record;
 }
-async function releaseMilestone(caseId, amount, milestoneNumber = 1) {
+async function releaseMilestone(caseId, amount, milestoneNumber = 1, contractorEmail = process.env.PAYPAL_CONTRACTOR_EMAIL) {
     const record = await requireAuthorized(caseId);
     validateMoney(amount, record.currency);
     if (record.milestones.some((item) => item.number === milestoneNumber))
@@ -171,7 +171,7 @@ async function releaseMilestone(caseId, amount, milestoneNumber = 1) {
         observe(record, "capture", capture.status, "capture");
         record.milestones.push(item);
         await writeRecord(record);
-        const submittedPayout = await (0, payments_1.sendPayout)(caseId, process.env.PAYPAL_CONTRACTOR_EMAIL ?? "", amount, record.currency, milestoneNumber);
+        const submittedPayout = await (0, payments_1.sendPayout)(caseId, contractorEmail ?? "", amount, record.currency, milestoneNumber);
         if (!submittedPayout.batchId || !submittedPayout.batchStatus)
             throw new Error("PayPal payout response was incomplete.");
         item.payoutBatchId = submittedPayout.batchId;

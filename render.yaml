@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: delivery-verifier
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: PAYMENT_MODE
+        value: sandbox
+      - key: PAYPAL_ENV
+        value: sandbox
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_BUYER_EMAIL
+        sync: false
+      - key: PAYPAL_CONTRACTOR_EMAIL
+        sync: false
+      - key: DATABASE_PATH
+        value: /var/data/delivery-verifier.sqlite
+      - key: SUBMISSIONS_PATH
+        value: /var/data/submissions

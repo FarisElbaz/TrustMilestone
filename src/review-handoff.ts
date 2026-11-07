@@ -84,7 +84,7 @@ export async function readReview(caseId: string): Promise<ReviewRecord> {
   }
 }
 
-export async function resolveReviewHandoff(caseId: string, decision: "release" | "reject", operator = process.env.OPERATOR_NAME ?? "unknown"): Promise<ReviewRecord> {
+export async function resolveReviewHandoff(caseId: string, decision: "release" | "reject", operator = process.env.OPERATOR_NAME ?? "unknown", contractorEmail = process.env.PAYPAL_CONTRACTOR_EMAIL): Promise<ReviewRecord> {
   const review = await readReview(caseId);
   if (review.status !== "pending") throw new Error(`Review for ${caseId} is already ${review.status}.`);
   if (review.expirationTime && Date.now() >= new Date(review.expirationTime).getTime()) throw new Error(`Authorization for ${caseId} has expired.`);
@@ -95,7 +95,7 @@ export async function resolveReviewHandoff(caseId: string, decision: "release" |
     await fs.writeFile(reviewPath(caseId), JSON.stringify(review, null, 2));
     throw new Error("A capture already exists; review marked needs_review and no PayPal call was made.");
   }
-  if (decision === "release") await releaseMilestone(caseId, payment.amount);
+  if (decision === "release") await releaseMilestone(caseId, payment.amount, 1, contractorEmail);
   else await rejectMilestone(caseId);
   const updated = await getPaymentRecord(caseId);
   review.status = "resolved";

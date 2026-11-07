@@ -17,12 +17,30 @@
 - Unit/integration validation (2026-11-03): `npm run build` passed; `npm test -- --runInBand` passed with 7 suites and 28 tests.
 - Checkpoint 8 (2026-11-03): README documents PowerShell/bash setup and the command order `fund`, buyer approval, `payment:status`, `verify`, and `review`. This notes file records the observed live order and explicitly separates verified behavior from unverified live results.
 
+## Hosted app demo
+
+1. Sign up `client@example.test` with role `client` and the PayPal buyer
+   sandbox email.
+2. Sign up `worker@example.test` with role `worker` and the PayPal contractor
+   sandbox email.
+3. Sign up `reviewer@example.test` with role `reviewer`.
+4. As the client, create a case using the worker email, generate and approve
+   criteria, fund it, approve the sandbox order, and check its status.
+5. As the worker, upload the submission and run verification. As the reviewer,
+   resolve any escalation with release or reject. The client and worker can
+   inspect the resulting PayPal IDs and payout status.
+
+The hosted app runs the migration automatically. It uses `DATABASE_PATH` and
+`SUBMISSIONS_PATH`, and state-changing requests require the session CSRF token.
+
 ## Limitations
 
 - Live checkpoints requiring buyer approval cannot complete in a non-interactive runner; the observed live run stopped after one `CREATED` order.
 - No live remainder, expiration-window, void, payout, contractor-balance, or full verifier result is claimed.
 - Payout retry recovery is conservative: an existing recorded batch is queried rather than resubmitted; no automatic background retry job is implemented.
-- State is file-backed under `out/`; there is no database, webhook listener, account provisioning, or automatic balance API.
+- Notifications, refunds, account recovery, and production-grade file storage
+  are not implemented. PayPal response files under `out/` remain for
+  compatibility while hosted records are also stored in SQLite.
 - PayPal response bodies are not copied wholesale into NOTES.md. IDs and non-secret status/shape observations are recorded, while operation statuses are persisted in `paypal.json`.
 
 ## Web interface dependencies
@@ -65,6 +83,16 @@
 ## Feature validation (2026-11-04)
 
 - Added criteria proposal/approval state under `out/<case-id>/criteria.json`; regeneration resets status to `proposed` and removes approval metadata.
+
+## Hosted implementation validation (2026-11-07)
+
+- `npm run build` passed.
+- `npm test -- --runInBand` passed: 11 suites, 51 tests.
+- Added hosted security coverage for sign-up/login, wrong passwords, login
+  rate limiting, worker ownership, reviewer-only resolution, CSRF rejection,
+  and upload path traversal.
+- No Render deployment was performed in this environment, so there is no live
+  deployment URL to record. metadata.
 - Verification now consumes only approved criteria and writes `review.json` plus `review.md` when routing escalates. The existing local hold behavior remains unchanged.
 - Added review resolution guards for pending status, expiry, double resolution, and reject-after-capture without a PayPal call.
 - `npm run build` passed.

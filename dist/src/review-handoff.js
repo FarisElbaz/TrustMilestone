@@ -69,7 +69,7 @@ async function readReview(caseId) {
         throw new Error(`Unable to read review for ${caseId}: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
-async function resolveReviewHandoff(caseId, decision, operator = process.env.OPERATOR_NAME ?? "unknown") {
+async function resolveReviewHandoff(caseId, decision, operator = process.env.OPERATOR_NAME ?? "unknown", contractorEmail = process.env.PAYPAL_CONTRACTOR_EMAIL) {
     const review = await readReview(caseId);
     if (review.status !== "pending")
         throw new Error(`Review for ${caseId} is already ${review.status}.`);
@@ -83,7 +83,7 @@ async function resolveReviewHandoff(caseId, decision, operator = process.env.OPE
         throw new Error("A capture already exists; review marked needs_review and no PayPal call was made.");
     }
     if (decision === "release")
-        await (0, milestone_1.releaseMilestone)(caseId, payment.amount);
+        await (0, milestone_1.releaseMilestone)(caseId, payment.amount, 1, contractorEmail);
     else
         await (0, milestone_1.rejectMilestone)(caseId);
     const updated = await (0, milestone_1.getPaymentRecord)(caseId);

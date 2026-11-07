@@ -2,19 +2,19 @@
   "caseId": "c03",
   "amount": "10.00",
   "currency": "USD",
-  "createdAt": "2026-11-04T12:51:58.350Z",
+  "createdAt": "2026-11-07T17:32:26.229Z",
   "milestones": [],
   "paypalResponses": [],
   "authorizationId": "mock-auth-c03",
-  "authorizedAt": "2026-11-04T12:51:58.350Z",
+  "authorizedAt": "2026-11-07T17:32:26.229Z",
   "authorizationStatus": "AUTHORIZED",
-  "authorizationExpirationTime": "2026-12-03T12:51:58.350Z",
+  "authorizationExpirationTime": "2026-12-06T17:32:26.229Z",
   "escalation": {
-    "deadline": "2026-11-05T12:51:58.352Z",
-    "recordedAt": "2026-11-04T12:51:58.353Z"
+    "deadline": "2026-11-08T17:32:26.230Z",
+    "recordedAt": "2026-11-07T17:32:26.231Z"
   },
   "hold": {
-    "deadline": "2026-11-05T12:51:58.352Z",
-    "recordedAt": "2026-11-04T12:51:58.353Z"
+    "deadline": "2026-11-08T17:32:26.230Z",
+    "recordedAt": "2026-11-07T17:32:26.231Z"
   }
 }
