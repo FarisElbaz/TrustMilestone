@@ -1,4 +1,11 @@
-export type CriterionOutcome = { id: string; method: "test" | "code_review" | "manual"; result: "pass" | "fail" | "unclear"; evidence: unknown };
+export type CriterionOutcome = {
+  id: string;
+  method: "test" | "code_review" | "manual";
+  result: "pass" | "fail" | "unclear";
+  evidence: unknown;
+  reason?: string;
+  match?: unknown;
+};
 export type Decision = { decision: "release" | "reject" | "escalate"; failingCriteria: CriterionOutcome[]; evidence: unknown[] };
 
 export function route(outcomes: CriterionOutcome[]): Decision {

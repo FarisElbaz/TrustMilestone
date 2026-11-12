@@ -1,9 +1,22 @@
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { writeEscalationReview, resolveReviewHandoff } from "../src/review-handoff";
 
 const caseId = "review-test";
-const output = path.resolve("out", caseId);
+let tempDir: string;
+let output: string;
+
+beforeAll(async () => {
+  tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "review-handoff-test-"));
+  process.env.OUTPUT_ROOT = tempDir;
+  output = path.resolve(tempDir, caseId);
+});
+
+afterAll(async () => {
+  await fs.rm(tempDir, { recursive: true, force: true });
+});
+
 const payment = {
   caseId, amount: "10.00", currency: "USD", createdAt: new Date().toISOString(),
   authorizedAt: new Date().toISOString(),
@@ -17,7 +30,6 @@ beforeEach(async () => {
   await fs.mkdir(output, { recursive: true });
   await fs.writeFile(path.join(output, "paypal.json"), JSON.stringify(payment));
 });
-afterAll(async () => { await fs.rm(output, { recursive: true, force: true }); });
 
 test("writes JSON and markdown escalation handoff", async () => {
   await writeEscalationReview(caseId, "submission", outcomes, payment);

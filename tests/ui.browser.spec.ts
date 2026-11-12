@@ -2,14 +2,14 @@ import { expect, test, type Page } from "@playwright/test";
 import path from "node:path";
 import fs from "node:fs/promises";
 
-const user = (role: "client" | "worker" | "reviewer") => ({
+const user = (role: "client" | "worker") => ({
   user: { id: 1, name: `${role} user`, email: `${role}@example.test`, role, paypalEmail: `${role}@sandbox.test` },
   csrf: "browser-csrf"
 });
 
 async function mockApi(
   page: Page,
-  role: "client" | "worker" | "reviewer",
+  role: "client" | "worker",
   options: { criteriaStatus?: "proposed" | "approved"; onReviewPost?: (body: unknown) => void } = {}
 ) {
   const criteriaStatus = options.criteriaStatus ?? "proposed";
@@ -18,20 +18,18 @@ async function mockApi(
   await page.route("**/api/auth/status", (route) => route.fulfill({ json: { ...user(role), authenticated: true } }));
   await page.route("**/api/auth/login", (route) => route.fulfill({ json: user(role), headers: { "x-csrf-token": "browser-csrf" } }));
   await page.route("**/api/cases", (route) => route.fulfill({ json: [{ id: "case-104", brief: "Build a reconciliation worker", stack: "Node 20", status: "created" }] }));
+  // Case 104 is owned by user id 1 when signed in as the client; the worker mock gets a different owner.
   await page.route("**/api/cases/case-104", (route) => route.fulfill({ json: {
-    id: "case-104", brief: "Build a reconciliation worker", stack: "Node 20", status: "escalated",
+    id: "case-104", ownerId: role === "client" ? 1 : 2, workerId: role === "worker" ? 1 : 3,
+    brief: "Build a reconciliation worker", stack: "Node 20", status: "escalate",
     worker: { name: "Assigned Worker", paypalEmail: "contractor@sandbox.test" },
     criteria: { status: criteriaStatus, criteria: [{ id: "C1", criterion: "Tests pass", method: "test" }], open_questions: [] },
     payment: { amount: "10.00", currency: "USD", authorizationId: "auth-mock-123" },
-    decision: { decision: "escalate", reason: "Criteria evaluation was inconclusive." }
+    verification: { decision: "escalate", outcomes: [{ id: "C1", method: "code_review", result: "unclear", reason: "Model disagreement" }] },
+    decision: { decision: "escalate", reason: "Criteria evaluation was inconclusive." },
+    review: { status: "pending" }
   } }));
   await page.route("**/api/cases/case-104/timeline", (route) => route.fulfill({ json: [] }));
-  await page.route("**/api/reviews/queue", (route) => route.fulfill({ json: [{
-    id: "case-104",
-    decision: "escalated",
-    timeRemaining: "6h 20m",
-    criteria: [{ id: "C1", verdict: "unclear", reason: "Model disagreement", evidence: [] }]
-  }] }));
   await page.route("**/api/cases/case-104/review", async (route) => {
     if (route.request().method() === "POST") {
       const postData = route.request().postDataJSON();
@@ -45,7 +43,7 @@ async function mockApi(
 
 test.describe("Milestone desk browser behavior", () => {
   test("signs in as each role", async ({ page }) => {
-    for (const role of ["client", "worker", "reviewer"] as const) {
+    for (const role of ["client", "worker"] as const) {
       await mockApi(page, role);
       await page.goto("/");
       await page.evaluate(() => localStorage.removeItem("session-active"));
@@ -68,77 +66,70 @@ test.describe("Milestone desk browser behavior", () => {
     await expect(page.getByText("Approve criteria before creating a buyer authorization.")).toBeVisible();
   });
 
-  test("uncertain model case appears in reviewer queue with unclear verdicts", async ({ page }) => {
-    await mockApi(page, "reviewer");
+  test("uncertain case asks the owning client to decide, with unclear verdicts visible", async ({ page }) => {
+    await mockApi(page, "client");
     await page.addInitScript(() => localStorage.setItem("session-active", "1"));
     await page.goto("/");
-    await expect(page.locator("#user-label")).toBeVisible();
-    await page.getByRole("button", { name: "Reviewer queue" }).click();
-    await expect(page.getByRole("heading", { name: "Reviewer queue" })).toBeVisible();
-    await expect(page.locator("#review-table").getByText("case-104")).toBeVisible();
-    await expect(page.locator("#review-table").getByText("escalated", { exact: true })).toBeVisible();
-    await expect(page.locator("#review-table").getByText("6h 20m")).toBeVisible();
-    await expect(page.locator("#review-table").getByText("C1")).toBeVisible();
-    await expect(page.locator("#review-table").getByText("unclear", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "case-104" }).click();
+    await expect(page.getByText("Your decision is needed.")).toBeVisible();
+    await expect(page.getByText("unclear", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Accept delivery" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Decline delivery" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Reviewer queue" })).toHaveCount(0);
   });
 
-  test("requires confirmation stating amount and contractor before reviewer release", async ({ page }) => {
-    let reviewCalledWith: unknown = null;
-    await mockApi(page, "reviewer", { onReviewPost: (body) => { reviewCalledWith = body; } });
+  test("worker sees the pending decision but cannot accept or decline", async ({ page }) => {
+    await mockApi(page, "worker");
     await page.addInitScript(() => localStorage.setItem("session-active", "1"));
     await page.goto("/");
-    await expect(page.locator("#user-label")).toBeVisible();
-    await page.getByRole("button", { name: "Reviewer queue" }).click();
-    await expect(page.locator("#review-table").getByText("case-104")).toBeVisible();
-    await page.locator("#review-table").getByRole("button", { name: "Review" }).click();
+    await page.getByRole("button", { name: "case-104" }).click();
+    await expect(page.getByText("Waiting for the client to accept or decline the delivery.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Accept delivery" })).toHaveCount(0);
+  });
 
-    await expect(page.getByRole("button", { name: "Release milestone" })).toBeVisible();
-    await page.getByRole("button", { name: "Release milestone" }).click();
+  test("requires confirmation stating amount and contractor before the client accepts", async ({ page }) => {
+    let reviewCalledWith: unknown = null;
+    await mockApi(page, "client", { onReviewPost: (body) => { reviewCalledWith = body; } });
+    await page.addInitScript(() => localStorage.setItem("session-active", "1"));
+    await page.goto("/");
+    await page.getByRole("button", { name: "case-104" }).click();
 
+    await page.getByRole("button", { name: "Accept delivery" }).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText("Release milestone?");
+    await expect(dialog).toContainText("Accept delivery?");
     await expect(dialog).toContainText("10.00 USD");
     await expect(dialog).toContainText("contractor@sandbox.test");
     await expect(dialog).toContainText("captures the authorization, then pays the contractor");
 
-    // Click Go back - confirmation cancelled, call must not run
     await page.getByRole("button", { name: "Go back" }).click();
     await expect(dialog).not.toBeVisible();
     expect(reviewCalledWith).toBeNull();
 
-    // Open again and confirm
-    await page.getByRole("button", { name: "Release milestone" }).click();
-    await expect(dialog).toBeVisible();
+    await page.getByRole("button", { name: "Accept delivery" }).click();
     await page.getByRole("button", { name: "Confirm" }).click();
     await expect(dialog).not.toBeVisible();
     expect(reviewCalledWith).toEqual({ decision: "release" });
   });
 
-  test("requires confirmation stating void consequence before reviewer reject", async ({ page }) => {
+  test("requires confirmation stating void consequence before the client declines", async ({ page }) => {
     let reviewCalledWith: unknown = null;
-    await mockApi(page, "reviewer", { onReviewPost: (body) => { reviewCalledWith = body; } });
+    await mockApi(page, "client", { onReviewPost: (body) => { reviewCalledWith = body; } });
     await page.addInitScript(() => localStorage.setItem("session-active", "1"));
     await page.goto("/");
-    await expect(page.locator("#user-label")).toBeVisible();
     await page.getByRole("button", { name: "case-104" }).click();
 
-    await expect(page.getByRole("button", { name: "Reject milestone" })).toBeVisible();
-    await page.getByRole("button", { name: "Reject milestone" }).click();
-
+    await page.getByRole("button", { name: "Decline delivery" }).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText("Reject milestone?");
+    await expect(dialog).toContainText("Decline delivery?");
     await expect(dialog).toContainText("voids the authorization and does not pay the contractor");
 
-    // Click Go back - confirmation cancelled, call must not run
     await page.getByRole("button", { name: "Go back" }).click();
     await expect(dialog).not.toBeVisible();
     expect(reviewCalledWith).toBeNull();
 
-    // Open again and confirm
-    await page.getByRole("button", { name: "Reject milestone" }).click();
-    await expect(dialog).toBeVisible();
+    await page.getByRole("button", { name: "Decline delivery" }).click();
     await page.getByRole("button", { name: "Confirm" }).click();
     await expect(dialog).not.toBeVisible();
     expect(reviewCalledWith).toEqual({ decision: "reject" });

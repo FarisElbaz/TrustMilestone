@@ -2,19 +2,42 @@
   "caseId": "c01",
   "amount": "10.00",
   "currency": "USD",
-  "createdAt": "2026-11-11T13:28:47.021Z",
+  "createdAt": "2026-11-12T16:55:38.513Z",
   "milestones": [
     {
       "number": 1,
       "amount": "10.00",
       "status": "released",
-      "timestamp": "2026-11-11T13:28:57.341Z"
+      "timestamp": "2026-11-12T16:55:50.639Z"
     }
   ],
-  "paypalResponses": [],
-  "operations": [],
+  "paypalResponses": [
+    {
+      "operation": "create-order",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T16:55:38.513Z"
+    },
+    {
+      "operation": "authorize-order",
+      "status": "AUTHORIZED",
+      "recordedAt": "2026-11-12T16:55:38.513Z"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "6d779015-b69b-473f-9179-069f39a18b1f",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T16:55:38.513Z"
+    }
+  ],
+  "orderId": "mock-order-c01",
+  "orderStatus": "COMPLETED",
   "authorizationId": "mock-auth-c01",
-  "authorizedAt": "2026-11-11T13:28:47.021Z",
+  "authorizedAt": "2026-11-12T16:55:38.513Z",
   "authorizationStatus": "AUTHORIZED",
-  "authorizationExpirationTime": "2026-12-10T13:28:47.021Z"
+  "authorizationResponseStatus": "AUTHORIZED",
+  "authorizationExpirationTime": "2026-12-11T16:55:38.513Z",
+  "authorizationAmount": "10.00",
+  "authorizationCurrency": "USD"
 }

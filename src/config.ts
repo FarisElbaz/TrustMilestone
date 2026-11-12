@@ -4,8 +4,34 @@ import path from "node:path";
 export interface ModelConfig {
   provider: string;
   model: string;
+  fallback_models?: string[];
   temperature: number;
   response_format: string;
+}
+
+/** Main model first, then any configured fallbacks (deduplicated). */
+export function modelChain(config: ModelConfig): string[] {
+  return [...new Set([config.model, ...(config.fallback_models ?? [])])];
+}
+
+const FALLBACK_STATUS = /HTTP (404|429|500|503)\b/;
+
+/** Calls `fn` with each model in turn, moving to the next only on an unavailable/unknown-model HTTP error. */
+export async function withModelFallback<T>(models: string[], fn: (model: string) => Promise<T>, passes = 2, pauseMs = 3000): Promise<T> {
+  let lastError: unknown;
+  for (let pass = 0; pass < passes; pass++) {
+    if (pass > 0) await new Promise((resolve) => setTimeout(resolve, pauseMs));
+    for (const model of models) {
+      try {
+        return await fn(model);
+      } catch (error) {
+        lastError = error;
+        const message = error instanceof Error ? error.message : String(error);
+        if (!FALLBACK_STATUS.test(message)) throw error;
+      }
+    }
+  }
+  throw lastError;
 }
 
 export interface AppConfig {
@@ -38,6 +64,10 @@ export function loadConfig(): AppConfig {
     if (!model || typeof model !== "object" || typeof (model as Record<string, unknown>).model !== "string" ||
         !(model as Record<string, unknown>).model) {
       throw new Error(`Missing required model configuration or model name: ${key}`);
+    }
+    const fallbacks = (model as Record<string, unknown>).fallback_models;
+    if (fallbacks !== undefined && (!Array.isArray(fallbacks) || !fallbacks.every((m) => typeof m === "string" && m))) {
+      throw new Error(`fallback_models must be an array of model names: ${key}`);
     }
   }
   return parsed as AppConfig;

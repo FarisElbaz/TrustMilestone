@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { getPaymentRecord, markNeedsReview, rejectMilestone, releaseMilestone, type PayPalRecord } from "./milestone";
 import type { CriterionOutcome } from "./route";
+import { outputRoot } from "./paths";
 
 export interface ReviewCriterion {
   id: string;
@@ -23,10 +24,11 @@ export interface ReviewRecord {
   paypalIds?: { authorizationId?: string; captureId?: string; payoutBatchId?: string };
 }
 
-export const reviewPath = (caseId: string): string => path.resolve("out", caseId, "review.json");
-export const reviewMarkdownPath = (caseId: string): string => path.resolve("out", caseId, "review.md");
+export const reviewPath = (caseId: string): string => path.resolve(outputRoot(), caseId, "review.json");
+export const reviewMarkdownPath = (caseId: string): string => path.resolve(outputRoot(), caseId, "review.md");
 
 function reasonFor(outcome: CriterionOutcome): string {
+  if (outcome.reason) return outcome.reason;
   if (outcome.method === "manual") return "Manual review is required.";
   if (outcome.result === "unclear") return "The automated evaluation was inconclusive.";
   return outcome.result === "pass" ? "Criterion passed." : "Criterion failed.";
@@ -45,7 +47,7 @@ export async function writeEscalationReview(
     criteria: outcomes.map((outcome) => ({
       id: outcome.id,
       verdict: outcome.result,
-      reason: reasonFor(outcome),
+      reason: outcome.reason ?? reasonFor(outcome),
       evidence: outcome.evidence
     })),
     authorizationId: paymentRecord.authorizationId,

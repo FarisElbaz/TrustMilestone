@@ -1,0 +1,67 @@
+{
+  "caseId": "Test2",
+  "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\data\\submissions\\Test2",
+  "timestamp": "2026-11-12T17:22:32.926Z",
+  "models": {
+    "criteria_generator": "gemini-3.5-flash-lite",
+    "code_review_judge": "gemini-3.5-flash-lite"
+  },
+  "decision": "escalate",
+  "failingCriteria": [],
+  "evidence": [],
+  "outcomes": [
+    {
+      "id": "C2",
+      "method": "test",
+      "result": "unclear",
+      "evidence": []
+    },
+    {
+      "id": "C3",
+      "method": "test",
+      "result": "unclear",
+      "evidence": []
+    },
+    {
+      "id": "C4",
+      "method": "test",
+      "result": "unclear",
+      "evidence": []
+    },
+    {
+      "id": "C1",
+      "method": "code_review",
+      "result": "pass",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "The application specifies Node version compatibility in dependencies and devDependencies such as @types/node 22.x and ts-jest supporting Node 20+, and compiles under Node 20 targets.",
+            "files": [
+              "V1_correct\\package.json",
+              "V1_correct\\tsconfig.json"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The application files, package.json, and package-lock.json indicate compatibility with Node 20 (specifically @types/node >=22 and ts-jest supporting Node 20+).",
+            "files": [
+              "V1_correct\\package.json",
+              "V1_correct\\package-lock.json"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The application package.json and package-lock.json indicate compatibility with Node 22 (and thus Node 20+), and ts-jest/typescript settings support modern Node environments.",
+            "files": [
+              "V1_correct\\package.json",
+              "V1_correct\\package-lock.json"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    }
+  ]
+}

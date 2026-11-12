@@ -1,0 +1,1 @@
+I need to place an order for a product by giving its ID and the quantity I want. The service should provide a new order ID and calculate the total price from the product price. A negative quantity should be rejected with a clear bad-request response.

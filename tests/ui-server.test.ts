@@ -1,6 +1,19 @@
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { createUiServer } from "../src/ui-server";
+
+let tempDir: string;
+const caseOut = (caseId: string) => path.join(tempDir, caseId);
+
+beforeAll(async () => {
+  tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "ui-server-test-"));
+  process.env.OUTPUT_ROOT = tempDir;
+});
+
+afterAll(async () => {
+  await fs.rm(tempDir, { recursive: true, force: true });
+});
 
 jest.mock("../src/criteria-approval", () => ({
   approveStoredCriteria: jest.fn(async () => ({ caseId: "ui-case", status: "approved", criteria: [], open_questions: [], out_of_scope: [] })),
@@ -18,7 +31,7 @@ jest.mock("../src/review-handoff", () => ({
   readReview: jest.fn(async () => ({ caseId: "ui-case", status: "pending", expirationTime: new Date(Date.now() - 1000).toISOString() })),
   resolveReviewHandoff: jest.fn(async () => ({ caseId: "ui-case", status: "resolved", decision: "release" })),
   timeRemaining: jest.fn(() => ({ milliseconds: -1000, text: "0h 0m", warning: true })),
-  reviewMarkdownPath: (caseId: string) => path.resolve("out", caseId, "review.md")
+  reviewMarkdownPath: (caseId: string) => path.resolve(process.env.OUTPUT_ROOT ?? "out", caseId, "review.md")
 }));
 
 const criteriaModule = jest.requireMock("../src/criteria-approval") as { readStoredCriteria: jest.Mock };
@@ -40,7 +53,7 @@ async function request(base: string, pathname: string, init?: RequestInit): Prom
 
 afterEach(async () => {
   jest.clearAllMocks();
-  await fs.rm(path.resolve("out", "ui-case"), { recursive: true, force: true });
+  await fs.rm(caseOut("ui-case"), { recursive: true, force: true });
 });
 
 test("creates a case and rejects a duplicate ID", async () => {
@@ -65,9 +78,9 @@ test("gates funding until criteria are approved", async () => {
 test("generates criteria without requiring an empty JSON request body", async () => {
   const { server, base } = await start();
   try {
-    await fs.mkdir(path.resolve("out", "ui-case"), { recursive: true });
-    await fs.writeFile(path.resolve("out", "ui-case", "brief.md"), "Build a widget");
-    await fs.writeFile(path.resolve("out", "ui-case", "manifest.json"), JSON.stringify({ stack: "Node 20" }));
+    await fs.mkdir(caseOut("ui-case"), { recursive: true });
+    await fs.writeFile(path.join(caseOut("ui-case"), "brief.md"), "Build a widget");
+    await fs.writeFile(path.join(caseOut("ui-case"), "manifest.json"), JSON.stringify({ stack: "Node 20" }));
     const result = await request(base, "/api/cases/ui-case/criteria", { method: "POST" });
     expect(result).toMatchObject({ status: 200, body: { status: "proposed" } });
   } finally { server.close(); }

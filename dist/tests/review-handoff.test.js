@@ -4,10 +4,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const promises_1 = __importDefault(require("node:fs/promises"));
+const node_os_1 = __importDefault(require("node:os"));
 const node_path_1 = __importDefault(require("node:path"));
 const review_handoff_1 = require("../src/review-handoff");
 const caseId = "review-test";
-const output = node_path_1.default.resolve("out", caseId);
+let tempDir;
+let output;
+beforeAll(async () => {
+    tempDir = await promises_1.default.mkdtemp(node_path_1.default.join(node_os_1.default.tmpdir(), "review-handoff-test-"));
+    process.env.OUTPUT_ROOT = tempDir;
+    output = node_path_1.default.resolve(tempDir, caseId);
+});
+afterAll(async () => {
+    await promises_1.default.rm(tempDir, { recursive: true, force: true });
+});
 const payment = {
     caseId, amount: "10.00", currency: "USD", createdAt: new Date().toISOString(),
     authorizedAt: new Date().toISOString(),
@@ -20,7 +30,6 @@ beforeEach(async () => {
     await promises_1.default.mkdir(output, { recursive: true });
     await promises_1.default.writeFile(node_path_1.default.join(output, "paypal.json"), JSON.stringify(payment));
 });
-afterAll(async () => { await promises_1.default.rm(output, { recursive: true, force: true }); });
 test("writes JSON and markdown escalation handoff", async () => {
     await (0, review_handoff_1.writeEscalationReview)(caseId, "submission", outcomes, payment);
     const review = JSON.parse(await promises_1.default.readFile(node_path_1.default.join(output, "review.json"), "utf8"));

@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { loadConfig } from "./config";
+import { loadConfig, modelChain, withModelFallback } from "./config";
 
 export interface Criterion {
   id: string;
@@ -78,7 +78,7 @@ export async function generateCriteria(briefText: string, stack: string, call: M
   const prompt = template.replace("{{CLIENT_REQUEST}}", briefText).replace("{{STACK_AND_CONSTRAINTS}}", stack);
   let raw: string;
   try {
-    raw = await call(prompt, loadConfig().criteria_generator.model, 0);
+    raw = await withModelFallback(modelChain(loadConfig().criteria_generator), (model) => call(prompt, model, 0));
   } catch (error) {
     throw error;
   }

@@ -4,10 +4,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const promises_1 = __importDefault(require("node:fs/promises"));
+const node_os_1 = __importDefault(require("node:os"));
 const node_path_1 = __importDefault(require("node:path"));
 const criteria_approval_1 = require("../src/criteria-approval");
 const caseId = "criteria-test";
-const output = node_path_1.default.resolve("out", caseId);
+let tempDir;
+let output;
+beforeAll(async () => {
+    tempDir = await promises_1.default.mkdtemp(node_path_1.default.join(node_os_1.default.tmpdir(), "criteria-approval-test-"));
+    process.env.OUTPUT_ROOT = tempDir;
+    output = node_path_1.default.resolve(tempDir, caseId);
+});
+afterAll(async () => {
+    await promises_1.default.rm(tempDir, { recursive: true, force: true });
+});
 const generated = JSON.stringify({
     summary: "validated delivery",
     criteria: [{ id: "C1", criterion: "the work is complete", method: "test", status: "ready", source: "brief" }],
@@ -16,7 +26,6 @@ const generated = JSON.stringify({
 });
 const call = async (prompt) => prompt.includes("revision") ? generated.replace("the work is complete", "the revised work is complete") : generated;
 beforeEach(async () => { await promises_1.default.rm(output, { recursive: true, force: true }); });
-afterAll(async () => { await promises_1.default.rm(output, { recursive: true, force: true }); });
 test("approves proposed criteria", async () => {
     const result = await (0, criteria_approval_1.generateAndApproveCriteria)(caseId, "brief", "Node 20", async () => "approve", call);
     expect(result?.status).toBe("approved");

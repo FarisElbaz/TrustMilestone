@@ -1,0 +1,62 @@
+{
+  "caseId": "case50",
+  "summary": "Implement an API endpoint to update the stock count for a specific product ID.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The application must be built using Node 20.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "STACK AND CONSTRAINTS: Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "The endpoint accepts a product ID and a new stock count value.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "Please change the stock count for a product when I provide its ID."
+    },
+    {
+      "id": "C3",
+      "criterion": "The system rejects stock count values that are not whole numbers with an error response.",
+      "method": "test",
+      "status": "ready",
+      "source": "The stock count must be a whole number"
+    },
+    {
+      "id": "C4",
+      "criterion": "The system rejects negative stock count values with an error response.",
+      "method": "test",
+      "status": "ready",
+      "source": "cannot be negative"
+    },
+    {
+      "id": "C5",
+      "criterion": "The system returns a 'not found' error response when the provided product ID does not exist in the database.",
+      "method": "test",
+      "status": "ready",
+      "source": "If the product is unknown, let me know it was not found."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What is the expected HTTP method, URL path, and request body format for the update operation?",
+      "affects": [
+        "C2"
+      ]
+    },
+    {
+      "question": "What specific HTTP status codes and JSON error message formats should be returned for validation errors and 'not found' errors?",
+      "affects": [
+        "C3",
+        "C4",
+        "C5"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-12T19:48:40.861Z",
+  "approvedAt": "2026-11-12T19:48:55.134Z",
+  "approvedBy": "Demo Client"
+}

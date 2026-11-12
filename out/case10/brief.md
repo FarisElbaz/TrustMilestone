@@ -1,0 +1,1 @@
+Please show an order by its ID. Regular customers should see the useful order details but not private internal notes. Administrators should be able to see the full order, while an unknown order should be reported as not found.

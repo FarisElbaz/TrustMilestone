@@ -14,12 +14,13 @@ const criteria_approval_1 = require("./criteria-approval");
 const milestone_1 = require("./milestone");
 const review_handoff_1 = require("./review-handoff");
 const verify_1 = require("./verify");
+const paths_1 = require("./paths");
 const port = Number(process.env.UI_PORT ?? 3000);
 const host = "127.0.0.1";
 const publicDirectory = node_path_1.default.resolve(__dirname, "..", "public");
 const maxUploadBytes = 50 * 1024 * 1024;
 const idPattern = /^[A-Za-z0-9._-]+$/;
-const caseRoot = (caseId) => node_path_1.default.resolve("out", caseId);
+const caseRoot = (caseId) => node_path_1.default.resolve((0, paths_1.outputRoot)(), caseId);
 const caseFile = (caseId, name) => node_path_1.default.join(caseRoot(caseId), name);
 function assertSandboxConfiguration() {
     if (process.env.PAYPAL_ENV !== "sandbox")
@@ -60,7 +61,7 @@ async function readOptionalJson(filename) {
 }
 async function listCaseIds() {
     const ids = new Set();
-    for (const root of [node_path_1.default.resolve("testset", "cases"), node_path_1.default.resolve("out")]) {
+    for (const root of [node_path_1.default.resolve("testset", "cases"), (0, paths_1.outputRoot)()]) {
         try {
             for (const entry of await promises_1.default.readdir(root, { withFileTypes: true }))
                 if (entry.isDirectory() && idPattern.test(entry.name))

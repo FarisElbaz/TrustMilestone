@@ -29,13 +29,26 @@ async function judgeCriterion(criterion, submissionDir, call = defaultCall) {
     const prompt = `Return JSON only: {"verdict":"pass|fail|unclear","reason":"...","files":["..."]}. Judge criterion ${criterion.id}: ${criterion.criterion}\n${source}`;
     const verdicts = [];
     for (let i = 0; i < 3; i++) {
-        const parsed = JSON.parse(await call(prompt, (0, config_1.loadConfig)().code_review_judge.model, 0));
-        if (!["pass", "fail", "unclear"].includes(parsed.verdict) || typeof parsed.reason !== "string" || !Array.isArray(parsed.files))
-            throw new Error("Invalid code review judge response");
-        verdicts.push(parsed);
+        const raw = await (0, config_1.withModelFallback)((0, config_1.modelChain)((0, config_1.loadConfig)().code_review_judge), (model) => call(prompt, model, 0));
+        verdicts.push(parseJudgeVerdict(raw));
     }
     const same = verdicts[0].verdict === verdicts[1].verdict && verdicts[1].verdict === verdicts[2].verdict;
     return { verdicts, combined: same ? "decided" : "unclear", result: same ? verdicts[0].verdict : "unclear" };
+}
+/** A malformed judge answer is treated as an uncertain verdict, so the case escalates to the client instead of crashing verification. */
+function parseJudgeVerdict(raw) {
+    let parsed;
+    try {
+        parsed = JSON.parse(raw);
+    }
+    catch {
+        return { verdict: "unclear", reason: "Judge response was not valid JSON.", files: [] };
+    }
+    const value = (Array.isArray(parsed) ? parsed[0] : parsed);
+    if (!value || !["pass", "fail", "unclear"].includes(value.verdict) || typeof value.reason !== "string") {
+        return { verdict: "unclear", reason: "Judge response did not match the expected verdict format.", files: [] };
+    }
+    return { verdict: value.verdict, reason: value.reason, files: Array.isArray(value.files) ? value.files.filter((f) => typeof f === "string") : [] };
 }
 async function collectFiles(dir) {
     const entries = await promises_1.default.readdir(dir, { withFileTypes: true });

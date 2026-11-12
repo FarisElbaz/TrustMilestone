@@ -72,7 +72,7 @@ async function generateCriteria(briefText, stack, call = defaultModelCall) {
     const prompt = template.replace("{{CLIENT_REQUEST}}", briefText).replace("{{STACK_AND_CONSTRAINTS}}", stack);
     let raw;
     try {
-        raw = await call(prompt, (0, config_1.loadConfig)().criteria_generator.model, 0);
+        raw = await (0, config_1.withModelFallback)((0, config_1.modelChain)((0, config_1.loadConfig)().criteria_generator), (model) => call(prompt, model, 0));
     }
     catch (error) {
         throw error;

@@ -12,11 +12,14 @@ exports.timeRemaining = timeRemaining;
 const promises_1 = __importDefault(require("node:fs/promises"));
 const node_path_1 = __importDefault(require("node:path"));
 const milestone_1 = require("./milestone");
-const reviewPath = (caseId) => node_path_1.default.resolve("out", caseId, "review.json");
+const paths_1 = require("./paths");
+const reviewPath = (caseId) => node_path_1.default.resolve((0, paths_1.outputRoot)(), caseId, "review.json");
 exports.reviewPath = reviewPath;
-const reviewMarkdownPath = (caseId) => node_path_1.default.resolve("out", caseId, "review.md");
+const reviewMarkdownPath = (caseId) => node_path_1.default.resolve((0, paths_1.outputRoot)(), caseId, "review.md");
 exports.reviewMarkdownPath = reviewMarkdownPath;
 function reasonFor(outcome) {
+    if (outcome.reason)
+        return outcome.reason;
     if (outcome.method === "manual")
         return "Manual review is required.";
     if (outcome.result === "unclear")
@@ -31,7 +34,7 @@ async function writeEscalationReview(caseId, submissionPath, outcomes, paymentRe
         criteria: outcomes.map((outcome) => ({
             id: outcome.id,
             verdict: outcome.result,
-            reason: reasonFor(outcome),
+            reason: outcome.reason ?? reasonFor(outcome),
             evidence: outcome.evidence
         })),
         authorizationId: paymentRecord.authorizationId,

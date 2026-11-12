@@ -1,0 +1,47 @@
+{
+  "caseId": "c1",
+  "summary": "Create a service to place an order by product ID and quantity, returning a new order ID and total price, while rejecting negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The application runs on Node 20.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "Accepts a request with a product ID and quantity to place an order.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "Provides a new order ID in the response upon successful order placement.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C4",
+      "criterion": "Calculates the total price from the product price upon successful order placement.",
+      "method": "test",
+      "status": "ready",
+      "source": "and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "Rejects a negative quantity with a bad-request response.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-12T15:20:52.334Z",
+  "approvedAt": "2026-11-12T15:28:59.516Z",
+  "approvedBy": "John Doe"
+}

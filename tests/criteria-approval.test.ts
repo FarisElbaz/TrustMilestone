@@ -1,9 +1,22 @@
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { approveStoredCriteria, generateAndApproveCriteria, invalidateCriteria, proposeCriteria, readStoredCriteria } from "../src/criteria-approval";
 
 const caseId = "criteria-test";
-const output = path.resolve("out", caseId);
+let tempDir: string;
+let output: string;
+
+beforeAll(async () => {
+  tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "criteria-approval-test-"));
+  process.env.OUTPUT_ROOT = tempDir;
+  output = path.resolve(tempDir, caseId);
+});
+
+afterAll(async () => {
+  await fs.rm(tempDir, { recursive: true, force: true });
+});
+
 const generated = JSON.stringify({
   summary: "validated delivery",
   criteria: [{ id: "C1", criterion: "the work is complete", method: "test", status: "ready", source: "brief" }],
@@ -13,7 +26,6 @@ const generated = JSON.stringify({
 const call = async (prompt: string) => prompt.includes("revision") ? generated.replace("the work is complete", "the revised work is complete") : generated;
 
 beforeEach(async () => { await fs.rm(output, { recursive: true, force: true }); });
-afterAll(async () => { await fs.rm(output, { recursive: true, force: true }); });
 
 test("approves proposed criteria", async () => {
   const result = await generateAndApproveCriteria(caseId, "brief", "Node 20", async () => "approve", call);

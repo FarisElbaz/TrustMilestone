@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.milestone = void 0;
+exports.checkBusinessBalance = exports.milestone = void 0;
 exports.getPaymentRecord = getPaymentRecord;
 exports.savePaymentRecord = savePaymentRecord;
 exports.markNeedsReview = markNeedsReview;
@@ -20,8 +20,10 @@ const node_path_1 = __importDefault(require("node:path"));
 const config_1 = require("./paypal/config");
 const orders_1 = require("./paypal/orders");
 const payments_1 = require("./paypal/payments");
+const criteria_approval_1 = require("./criteria-approval");
+const paths_1 = require("./paths");
 const paymentMode = () => process.env.PAYMENT_MODE ?? "mock";
-const recordPath = (caseId) => node_path_1.default.resolve("out", caseId, "paypal.json");
+const recordPath = (caseId) => node_path_1.default.resolve((0, paths_1.outputRoot)(), caseId, "paypal.json");
 const known = {
     order: new Set(["CREATED", "PAYER_ACTION_REQUIRED", "APPROVED", "COMPLETED"]),
     authorization: new Set(["CREATED", "AUTHORIZED", "PARTIALLY_CAPTURED", "CAPTURED", "VOIDED", "EXPIRED"]),
@@ -89,37 +91,135 @@ function assertCaseId(caseId) {
     if (!/^[A-Za-z0-9._-]+$/.test(caseId))
         throw new Error("Invalid case ID.");
 }
-async function fundCase(caseId, amount, currency = process.env.PAYPAL_CURRENCY ?? "USD") {
+async function fundCase(caseId, amount, currency = process.env.PAYPAL_CURRENCY ?? "USD", method = "card") {
     assertCaseId(caseId);
     validateMoney(amount, currency);
+    // Refuse a second authorization for a case that already has one
     try {
         const existing = await readRecord(caseId);
-        if (!existing.voidedAt && existing.milestones.length === 0)
+        if (existing.authorizationId && existing.authorizationStatus !== "VOIDED") {
+            throw new Error(`Case ${caseId} already has an authorization.`);
+        }
+        if (method === "manual" && !existing.voidedAt && existing.milestones.length === 0 && existing.orderId) {
             return existing;
+        }
     }
     catch (error) {
+        if (error instanceof Error && error.message.includes("already has an authorization"))
+            throw error;
         if (!(error instanceof Error) || !error.message.startsWith("No PayPal record"))
             throw error;
     }
-    const record = { caseId, amount, currency, createdAt: new Date().toISOString(), milestones: [], paypalResponses: [], operations: [] };
+    // Refuse funding if the case's criteria are not approved
+    const criteria = await (0, criteria_approval_1.readStoredCriteria)(caseId).catch(() => undefined);
+    if (!criteria || criteria.status !== "approved") {
+        throw new Error(`Criteria for case ${caseId} are not approved.`);
+    }
+    // Check card variables if card method is requested in sandbox
+    if (method === "card" && paymentMode() !== "mock") {
+        const cardVariables = [
+            "PAYPAL_TEST_CARD_NUMBER",
+            "PAYPAL_TEST_CARD_EXPIRY",
+            "PAYPAL_TEST_CARD_SECURITY_CODE",
+            "PAYPAL_TEST_CARD_NAME"
+        ];
+        const missing = cardVariables.filter((name) => !process.env[name]);
+        if (missing.length > 0) {
+            throw new Error(`Missing card environment variable(s): ${missing.join(", ")}`);
+        }
+    }
+    const record = {
+        caseId,
+        amount,
+        currency,
+        createdAt: new Date().toISOString(),
+        milestones: [],
+        paypalResponses: [],
+        operations: []
+    };
     if (paymentMode() === "mock") {
-        record.authorizationId = `mock-auth-${caseId}`;
-        record.authorizedAt = record.createdAt;
-        record.authorizationStatus = "AUTHORIZED";
-        record.authorizationExpirationTime = new Date(Date.now() + 29 * 86400000).toISOString();
+        const requestId = node_crypto_1.default.randomUUID();
+        record.operations = [
+            { operation: "create-order", requestId, status: "COMPLETED", recordedAt: new Date().toISOString() }
+        ];
+        record.orderId = `mock-order-${caseId}`;
+        if (method === "card") {
+            record.orderStatus = "COMPLETED";
+            record.authorizationId = `mock-auth-${caseId}`;
+            record.authorizedAt = record.createdAt;
+            record.authorizationStatus = "AUTHORIZED";
+            record.authorizationResponseStatus = "AUTHORIZED";
+            record.authorizationExpirationTime = new Date(Date.now() + 29 * 86400000).toISOString();
+            record.authorizationAmount = amount;
+            record.authorizationCurrency = currency;
+            finishOperation(record, "create-order", "COMPLETED");
+            observe(record, "create-order", "COMPLETED", "order");
+            observe(record, "authorize-order", "AUTHORIZED", "authorization");
+        }
+        else {
+            record.orderStatus = "CREATED";
+            record.approvalUrl = `https://mock.paypal.com/checkout?order=${record.orderId}`;
+            finishOperation(record, "create-order", "CREATED");
+            observe(record, "create-order", "CREATED", "order");
+        }
+        await writeRecord(record);
+        return record;
+    }
+    assertSandbox();
+    const requestId = node_crypto_1.default.randomUUID();
+    record.operations = [
+        { operation: "create-order", requestId, status: "pending", recordedAt: new Date().toISOString() }
+    ];
+    await writeRecord(record);
+    if (method === "card") {
+        const card = {
+            number: process.env.PAYPAL_TEST_CARD_NUMBER,
+            expiry: process.env.PAYPAL_TEST_CARD_EXPIRY,
+            security_code: process.env.PAYPAL_TEST_CARD_SECURITY_CODE,
+            name: process.env.PAYPAL_TEST_CARD_NAME
+        };
+        const created = await (0, orders_1.createAuthorizeOrderWithCard)(amount, currency, caseId, card, requestId);
+        record.orderId = created.orderId;
+        record.approvalUrl = created.approvalUrl;
+        record.orderStatus = created.orderStatus;
+        finishOperation(record, "create-order", record.orderStatus);
+        observe(record, "create-order", record.orderStatus, "order");
+        await writeRecord(record);
+        const order = await (0, orders_1.getOrder)(created.orderId);
+        record.orderStatus = order.status;
+        let authorization;
+        if (order.authorizationId) {
+            authorization = await (0, orders_1.getAuthorization)(order.authorizationId);
+        }
+        else {
+            const authRequestId = node_crypto_1.default.randomUUID();
+            record.operations.push({ operation: "authorize-order", requestId: authRequestId, status: "pending", recordedAt: new Date().toISOString() });
+            await writeRecord(record);
+            authorization = await (0, orders_1.authorizeOrder)(created.orderId, authRequestId);
+        }
+        if (!authorization.authorizationId || !authorization.expirationTime) {
+            throw new Error("PayPal authorization response did not include ID and expiration_time.");
+        }
+        record.authorizationId = authorization.authorizationId;
+        record.authorizedAt = new Date().toISOString();
+        record.authorizationStatus = authorization.status ?? "UNKNOWN";
+        record.authorizationResponseStatus = record.authorizationStatus;
+        record.authorizationExpirationTime = authorization.expirationTime;
+        record.authorizationAmount = authorization.amount?.value ?? amount;
+        record.authorizationCurrency = authorization.amount?.currency_code ?? currency;
+        finishOperation(record, "authorize-order", record.authorizationStatus);
+        observe(record, "authorize-order", record.authorizationStatus, "authorization");
+        await writeRecord(record);
     }
     else {
-        assertSandbox();
-        const requestId = beginOperation(record, "create-order");
-        await writeRecord(record);
         const order = await (0, orders_1.createAuthorizeOrder)(amount, currency, caseId, requestId);
         record.orderId = order.orderId;
         record.approvalUrl = order.approvalUrl;
         record.orderStatus = "CREATED";
         finishOperation(record, "create-order", record.orderStatus);
         observe(record, "create-order", record.orderStatus, "order");
+        await writeRecord(record);
     }
-    await writeRecord(record);
     return record;
 }
 async function paymentStatus(caseId, buyerEmail = process.env.PAYPAL_BUYER_EMAIL) {
@@ -288,3 +388,5 @@ async function refreshPayoutStatus(caseId, milestoneNumber = 1) {
     return milestone.payoutStatus;
 }
 exports.milestone = { releaseMilestone, holdMilestone, rejectMilestone };
+var evidence_1 = require("./paypal/evidence");
+Object.defineProperty(exports, "checkBusinessBalance", { enumerable: true, get: function () { return evidence_1.checkBusinessBalance; } });

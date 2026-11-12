@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { loadConfig } from "./config";
+import { loadConfig, modelChain, withModelFallback } from "./config";
 
 export type Verdict = "pass" | "fail" | "unclear";
 export interface JudgeVerdict { verdict: Verdict; reason: string; files: string[]; }
@@ -27,12 +27,22 @@ export async function judgeCriterion(criterion: { id: string; criterion: string 
   const prompt = `Return JSON only: {"verdict":"pass|fail|unclear","reason":"...","files":["..."]}. Judge criterion ${criterion.id}: ${criterion.criterion}\n${source}`;
   const verdicts: JudgeVerdict[] = [];
   for (let i = 0; i < 3; i++) {
-    const parsed = JSON.parse(await call(prompt, loadConfig().code_review_judge.model, 0)) as JudgeVerdict;
-    if (!["pass", "fail", "unclear"].includes(parsed.verdict) || typeof parsed.reason !== "string" || !Array.isArray(parsed.files)) throw new Error("Invalid code review judge response");
-    verdicts.push(parsed);
+    const raw = await withModelFallback(modelChain(loadConfig().code_review_judge), (model) => call(prompt, model, 0));
+    verdicts.push(parseJudgeVerdict(raw));
   }
   const same = verdicts[0].verdict === verdicts[1].verdict && verdicts[1].verdict === verdicts[2].verdict;
   return { verdicts, combined: same ? "decided" : "unclear", result: same ? verdicts[0].verdict : "unclear" };
+}
+
+/** A malformed judge answer is treated as an uncertain verdict, so the case escalates to the client instead of crashing verification. */
+function parseJudgeVerdict(raw: string): JudgeVerdict {
+  let parsed: unknown;
+  try { parsed = JSON.parse(raw); } catch { return { verdict: "unclear", reason: "Judge response was not valid JSON.", files: [] }; }
+  const value = (Array.isArray(parsed) ? parsed[0] : parsed) as Partial<JudgeVerdict> | undefined;
+  if (!value || !["pass", "fail", "unclear"].includes(value.verdict as string) || typeof value.reason !== "string") {
+    return { verdict: "unclear", reason: "Judge response did not match the expected verdict format.", files: [] };
+  }
+  return { verdict: value.verdict as Verdict, reason: value.reason, files: Array.isArray(value.files) ? value.files.filter((f): f is string => typeof f === "string") : [] };
 }
 
 async function collectFiles(dir: string): Promise<string[]> {

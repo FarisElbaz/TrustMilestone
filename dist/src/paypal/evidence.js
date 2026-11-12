@@ -6,10 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.readEvidence = readEvidence;
 exports.writeEvidence = writeEvidence;
 exports.recordContractorBalances = recordContractorBalances;
+exports.checkBusinessBalance = checkBusinessBalance;
 const promises_1 = __importDefault(require("node:fs/promises"));
 const node_path_1 = __importDefault(require("node:path"));
 const milestone_1 = require("../milestone");
-const evidencePath = (caseId) => node_path_1.default.resolve("out", caseId, "evidence.json");
+const reporting_1 = require("./reporting");
+const client_1 = require("./client");
+const paths_1 = require("../paths");
+const evidencePath = (caseId) => node_path_1.default.resolve((0, paths_1.outputRoot)(), caseId, "evidence.json");
 async function readEvidence(caseId) {
     try {
         return JSON.parse(await promises_1.default.readFile(evidencePath(caseId), "utf8"));
@@ -42,4 +46,75 @@ async function recordContractorBalances(caseId, milestoneNumber, before, after, 
     await (0, milestone_1.savePaymentRecord)(record);
     await writeEvidence(evidence);
     return evidence;
+}
+async function checkBusinessBalance(caseId, currency = "USD") {
+    const caseFolder = node_path_1.default.resolve((0, paths_1.outputRoot)(), caseId);
+    try {
+        await promises_1.default.mkdir(caseFolder, { recursive: true });
+    }
+    catch {
+        // ignore
+    }
+    try {
+        const snapshot = await (0, reporting_1.getBalances)(currency);
+        const evidence = await readEvidence(caseId);
+        evidence.moneyChecks ??= {};
+        evidence.moneyChecks.businessBalanceAfterRelease = {
+            verified: true,
+            httpStatus: 200,
+            total: snapshot.total,
+            currency: snapshot.currency,
+            available: snapshot.available,
+            capturedAt: snapshot.capturedAt
+        };
+        await writeEvidence(evidence);
+        return { verified: true, total: snapshot.total, currency: snapshot.currency };
+    }
+    catch (error) {
+        if (error?.code === "ENOENT") {
+            await promises_1.default.mkdir(caseFolder, { recursive: true });
+            try {
+                const snapshot = await (0, reporting_1.getBalances)(currency);
+                const evidence = await readEvidence(caseId);
+                evidence.moneyChecks ??= {};
+                evidence.moneyChecks.businessBalanceAfterRelease = {
+                    verified: true,
+                    httpStatus: 200,
+                    total: snapshot.total,
+                    currency: snapshot.currency,
+                    available: snapshot.available,
+                    capturedAt: snapshot.capturedAt
+                };
+                await writeEvidence(evidence);
+                return { verified: true, total: snapshot.total, currency: snapshot.currency };
+            }
+            catch (retryError) {
+                error = retryError;
+            }
+        }
+        const status = error instanceof client_1.PayPalApiError
+            ? error.status
+            : (error?.status ?? (error?.message?.includes("403") ? 403 : error?.message?.includes("404") ? 404 : undefined));
+        let message;
+        if (status === 403 || status === 404 || error?.message?.includes("insufficient permissions") || error?.message?.includes("NOT_AUTHORIZED")) {
+            message = "Balance not verified: PayPal reporting permission not granted";
+        }
+        else {
+            message = `Balance not verified: ${error instanceof Error ? error.message : String(error)}`;
+        }
+        try {
+            const evidence = await readEvidence(caseId).catch(() => ({ caseId, milestones: {}, updatedAt: new Date().toISOString() }));
+            evidence.moneyChecks ??= {};
+            evidence.moneyChecks.businessBalanceAfterRelease = {
+                verified: false,
+                httpStatus: status ?? 403,
+                message
+            };
+            await writeEvidence(evidence);
+        }
+        catch {
+            // do not block the rest of the flow
+        }
+        return { verified: false, message };
+    }
 }

@@ -1,9 +1,22 @@
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { releaseMilestone, rejectMilestone } from "../src/milestone";
 
 const caseId = "guard-test";
-const file = path.resolve("out", caseId, "paypal.json");
+let tempDir: string;
+let file: string;
+
+beforeAll(async () => {
+  tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "milestone-guards-test-"));
+  process.env.OUTPUT_ROOT = tempDir;
+  file = path.resolve(tempDir, caseId, "paypal.json");
+});
+
+afterAll(async () => {
+  await fs.rm(tempDir, { recursive: true, force: true });
+});
+
 async function seed(extra: Record<string, unknown> = {}) {
   await fs.mkdir(path.dirname(file), { recursive: true });
   await fs.writeFile(file, JSON.stringify({
@@ -13,7 +26,7 @@ async function seed(extra: Record<string, unknown> = {}) {
   }));
 }
 beforeEach(async () => { process.env.PAYMENT_MODE = "mock"; await seed(); });
-afterEach(async () => { await fs.rm(path.resolve("out", caseId), { recursive: true, force: true }); });
+afterEach(async () => { await fs.rm(path.resolve(tempDir, caseId), { recursive: true, force: true }); });
 
 test("refuses duplicate milestone", async () => {
   await releaseMilestone(caseId, "1.00");

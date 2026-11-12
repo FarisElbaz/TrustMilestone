@@ -1,0 +1,47 @@
+{
+  "caseId": "case01",
+  "summary": "Build a backend service in Node 20 that accepts product ID and quantity to create an order, calculates total price, and rejects negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The software is implemented using Node 20.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "The service accepts a product ID and a quantity.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "The service provides a new order ID in the successful response.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C4",
+      "criterion": "The service calculates the total price from the product price.",
+      "method": "test",
+      "status": "ready",
+      "source": "and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "A negative quantity is rejected with a bad-request response.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-12T13:44:15.012Z",
+  "approvedAt": "2026-11-12T13:44:17.881Z",
+  "approvedBy": "Faris ElBaz"
+}

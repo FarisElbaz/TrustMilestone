@@ -1,0 +1,56 @@
+{
+  "case": "c05",
+  "stack": "Node 20, Express, TypeScript, Jest, supertest",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Update a product stock count."
+    },
+    {
+      "id": "REQ-2",
+      "text": "Reject non-integer or negative stock with HTTP 400."
+    },
+    {
+      "id": "REQ-3",
+      "text": "Return 404 for an unknown product."
+    }
+  ],
+  "variants": [
+    {
+      "id": "V1_correct",
+      "change_description": "A different correct implementation of the same requirements.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    },
+    {
+      "id": "V2_subtle_bug",
+      "change_description": "Changes validation to reject zero stock as well as negative stock.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "rejects non-integer stock"
+      ],
+      "requirements_affected": [
+        "REQ-2"
+      ]
+    },
+    {
+      "id": "V3_missing_feature",
+      "change_description": "Removes the unknown-product check from the stock update route.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "returns 404 for unknown product"
+      ],
+      "requirements_affected": [
+        "REQ-3"
+      ]
+    },
+    {
+      "id": "V4_ambiguous",
+      "change_description": "Interprets zero stock as invalid, while still rejecting negative and non-integer values.",
+      "expected_verdict": "unclear",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    }
+  ]
+}

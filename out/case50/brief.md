@@ -1,0 +1,1 @@
+Please change the stock count for a product when I provide its ID. The stock count must be a whole number and cannot be negative. If the product is unknown, let me know it was not found.

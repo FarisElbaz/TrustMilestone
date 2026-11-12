@@ -10,6 +10,7 @@ const helmet_1 = __importDefault(require("helmet"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const node_crypto_1 = __importDefault(require("node:crypto"));
 const promises_1 = __importDefault(require("node:fs/promises"));
+const node_fs_1 = require("node:fs");
 const node_path_1 = __importDefault(require("node:path"));
 const busboy_1 = __importDefault(require("busboy"));
 const adm_zip_1 = __importDefault(require("adm-zip"));
@@ -19,6 +20,7 @@ const milestone_1 = require("./milestone");
 const review_handoff_1 = require("./review-handoff");
 const verify_1 = require("./verify");
 const evidence_1 = require("./paypal/evidence");
+const paths_1 = require("./paths");
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const casePattern = /^[A-Za-z0-9._-]+$/;
 const maxUploadBytes = 50 * 1024 * 1024;
@@ -63,7 +65,7 @@ function validateCaseId(id) {
 function caseForUser(id, user) {
     validateCaseId(id);
     const row = db().prepare("SELECT * FROM cases WHERE id = ?").get(id);
-    if (!row || (user.role !== "reviewer" && Number(row.owner_id) !== user.id && Number(row.worker_id) !== user.id))
+    if (!row || (Number(row.owner_id) !== user.id && Number(row.worker_id) !== user.id))
         throw new Error("Case not found.");
     return { id: String(row.id), ownerId: Number(row.owner_id), workerId: Number(row.worker_id), brief: String(row.brief), stack: String(row.stack), status: String(row.status) };
 }
@@ -141,17 +143,64 @@ async function upload(req, caseId) {
     await promises_1.default.mkdir(temp, { recursive: true });
     let total = 0;
     const files = [];
+    const writeStreams = [];
+    const writePromises = [];
+    const writeWithStream = async (target, data) => {
+        await promises_1.default.mkdir(node_path_1.default.dirname(target), { recursive: true });
+        const ws = (0, node_fs_1.createWriteStream)(target);
+        writeStreams.push(ws);
+        const promise = new Promise((resolveWs, rejectWs) => {
+            let finishFired = false;
+            let closeFired = false;
+            const check = () => {
+                if (finishFired && (closeFired || ws.closed)) {
+                    resolveWs();
+                }
+            };
+            ws.on("finish", () => {
+                finishFired = true;
+                check();
+            });
+            ws.on("close", () => {
+                closeFired = true;
+                check();
+            });
+            ws.on("error", rejectWs);
+        });
+        writePromises.push(promise);
+        ws.end(data);
+        await promise;
+    };
     try {
+        let pendingFileHandlers = 0;
+        let parserFinished = false;
         await new Promise((resolve, reject) => {
+            let settled = false;
+            const fail = (err) => {
+                if (!settled) {
+                    settled = true;
+                    reject(err);
+                }
+            };
+            const checkDone = () => {
+                if (!settled && parserFinished && pendingFileHandlers === 0) {
+                    settled = true;
+                    resolve();
+                }
+            };
             const parser = (0, busboy_1.default)({ headers: req.headers, preservePath: true, limits: { fileSize: maxUploadBytes, files: 100 } });
             parser.on("file", (_field, stream, info) => {
+                pendingFileHandlers++;
                 const chunks = [];
-                stream.on("data", (chunk) => { total += chunk.length; if (total > maxUploadBytes)
-                    stream.destroy(new Error("Upload exceeds the 50 MB limit."));
-                else
-                    chunks.push(chunk); });
-                stream.on("limit", () => reject(new Error("Upload exceeds the 50 MB limit.")));
-                stream.on("error", reject);
+                stream.on("data", (chunk) => {
+                    total += chunk.length;
+                    if (total > maxUploadBytes)
+                        stream.destroy(new Error("Upload exceeds the 50 MB limit."));
+                    else
+                        chunks.push(chunk);
+                });
+                stream.on("limit", () => fail(new Error("Upload exceeds the 50 MB limit.")));
+                stream.on("error", (err) => fail(err));
                 stream.on("end", async () => {
                     try {
                         const filename = info.filename || "upload.bin";
@@ -165,33 +214,86 @@ async function upload(req, caseId) {
                                 total += data.length;
                                 if (total > maxUploadBytes)
                                     throw new Error("Extracted upload exceeds the 50 MB limit.");
-                                await promises_1.default.mkdir(node_path_1.default.dirname(target), { recursive: true });
-                                await promises_1.default.writeFile(target, data);
+                                await writeWithStream(target, data);
                                 files.push(node_path_1.default.relative(temp, target));
                             }
                         }
                         else {
                             const target = safeUploadPath(temp, filename);
-                            await promises_1.default.mkdir(node_path_1.default.dirname(target), { recursive: true });
-                            await promises_1.default.writeFile(target, Buffer.concat(chunks));
+                            await writeWithStream(target, Buffer.concat(chunks));
                             files.push(node_path_1.default.relative(temp, target));
                         }
                     }
                     catch (error) {
-                        reject(error);
+                        fail(error);
+                    }
+                    finally {
+                        pendingFileHandlers--;
+                        checkDone();
                     }
                 });
             });
-            parser.on("error", reject);
-            parser.on("finish", resolve);
+            parser.on("error", (err) => fail(err));
+            parser.on("finish", () => {
+                parserFinished = true;
+                checkDone();
+            });
+            req.on("error", (err) => fail(err));
             req.pipe(parser);
         });
+        // Make sure every write stream is closed and its finish event has fired before the rename. Await each stream's completion.
+        await Promise.all(writePromises);
+        for (const ws of writeStreams) {
+            if (!ws.closed) {
+                await new Promise((resolveWs, rejectWs) => {
+                    let finishFired = ws.writableEnded;
+                    let closeFired = ws.closed;
+                    const check = () => {
+                        if (finishFired && (closeFired || ws.closed))
+                            resolveWs();
+                    };
+                    ws.on("finish", () => {
+                        finishFired = true;
+                        check();
+                    });
+                    ws.on("close", () => {
+                        closeFired = true;
+                        check();
+                    });
+                    ws.on("error", rejectWs);
+                    if (ws.closed)
+                        resolveWs();
+                });
+            }
+        }
         await promises_1.default.rm(root, { recursive: true, force: true });
         await promises_1.default.mkdir(node_path_1.default.dirname(root), { recursive: true });
-        await promises_1.default.rename(temp, root);
+        try {
+            await promises_1.default.rename(temp, root);
+        }
+        catch (error) {
+            const err = error;
+            if (err.code === "EPERM" || err.message?.includes("EPERM")) {
+                console.warn(`[upload] fs.rename failed with EPERM; falling back to fs.cp from ${temp} to ${root}`);
+                await promises_1.default.mkdir(root, { recursive: true });
+                await promises_1.default.cp(temp, root, { recursive: true });
+                await promises_1.default.rm(temp, { recursive: true, force: true });
+            }
+            else {
+                throw error;
+            }
+        }
         return { files: files.sort(), size: total };
     }
     catch (error) {
+        for (const ws of writeStreams) {
+            if (!ws.closed) {
+                try {
+                    ws.destroy();
+                }
+                catch { }
+            }
+        }
         await promises_1.default.rm(temp, { recursive: true, force: true });
         throw error;
     }
@@ -215,7 +317,7 @@ function createApp() {
             const role = required(body, "role");
             if (!emailPattern.test(email) || !emailPattern.test(paypalEmail))
                 throw new Error("A valid email address is required.");
-            if (password.length < 10 || !["client", "worker", "reviewer"].includes(role))
+            if (password.length < 10 || !["client", "worker"].includes(role))
                 throw new Error("Invalid password or role.");
             const hash = await bcryptjs_1.default.hash(password, 12);
             const result = db().prepare("INSERT INTO users(email,name,role,paypal_email,password_hash,created_at) VALUES(?,?,?,?,?,?)").run(email, name, role, paypalEmail, hash, (0, database_1.now)());
@@ -250,11 +352,31 @@ function createApp() {
     });
     app.get("/api/auth/me", requireAuth, (req, res) => res.json({ user: publicUser(req.user), csrf: req.session.csrf }));
     app.get("/api/cases", requireAuth, (req, res) => {
-        const query = req.user.role === "reviewer" ? "SELECT * FROM cases ORDER BY created_at DESC" : "SELECT * FROM cases WHERE owner_id = ? OR worker_id = ? ORDER BY created_at DESC";
-        const rows = (req.user.role === "reviewer" ? db().prepare(query).all() : db().prepare(query).all(req.user.id, req.user.id));
+        const rows = db().prepare("SELECT * FROM cases WHERE owner_id = ? OR worker_id = ? ORDER BY created_at DESC").all(req.user.id, req.user.id);
         res.json(rows.map((row) => ({ id: row.id, brief: row.brief, stack: row.stack, status: row.status, ownerId: row.owner_id, workerId: row.worker_id })));
     });
-    app.post("/api/cases", requireAuth, requireRole("client"), (req, res, next) => {
+    app.get("/api/templates", async (_req, res, next) => {
+        try {
+            const base = node_path_1.default.resolve("testset", "cases");
+            const entries = await promises_1.default.readdir(base, { withFileTypes: true });
+            const templates = await Promise.all(entries
+                .filter((e) => e.isDirectory() && /^c\d+$/.test(e.name))
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(async (e) => {
+                let brief = "";
+                try {
+                    brief = await promises_1.default.readFile(node_path_1.default.join(base, e.name, "brief.md"), "utf8");
+                }
+                catch { /* ignore */ }
+                return { id: e.name, label: brief.split("\n")[0].trim() || e.name, brief };
+            }));
+            res.json(templates);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+    app.post("/api/cases", requireAuth, requireRole("client"), async (req, res, next) => {
         try {
             const body = jsonBody(req);
             const id = required(body, "id");
@@ -262,12 +384,36 @@ function createApp() {
             const brief = required(body, "brief");
             const stack = required(body, "stack");
             const workerEmail = required(body, "workerEmail").toLowerCase();
+            const templateId = typeof body.templateId === "string" ? body.templateId.trim() : "";
+            if (!templateId)
+                throw new Error("templateId is required.");
             const worker = db().prepare("SELECT * FROM users WHERE email = ? AND role = 'worker'").get(workerEmail);
             if (!worker)
                 throw new Error("Assigned worker was not found.");
+            // Validate template exists and copy tests/ + manifest.json into out/<id>/
+            const tmplPath = node_path_1.default.resolve("testset", "cases", templateId);
+            try {
+                await promises_1.default.stat(tmplPath);
+            }
+            catch {
+                throw new Error(`Template "${templateId}" was not found in testset/cases/.`);
+            }
+            const outDir = node_path_1.default.resolve((0, paths_1.outputRoot)(), id);
+            // Never adopt files left by an earlier case with the same ID (old criteria, payments, results).
+            if (db().prepare("SELECT 1 FROM cases WHERE lower(id) = lower(?)").get(id))
+                throw new Error(`Case ID "${id}" is already taken. Choose a different ID.`);
+            if (await promises_1.default.stat(outDir).then(() => true).catch(() => false))
+                throw new Error(`Case ID "${id}" was used before and still has saved files. Choose a different ID.`);
+            await promises_1.default.mkdir(outDir, { recursive: true });
+            // Copy tests from template: prefer top-level tests/, fall back to reference/tests/
+            const testsSource = await promises_1.default.stat(node_path_1.default.join(tmplPath, "tests")).then(() => node_path_1.default.join(tmplPath, "tests")).catch(() => node_path_1.default.join(tmplPath, "reference", "tests"));
+            await promises_1.default.cp(testsSource, node_path_1.default.join(outDir, "tests"), { recursive: true });
+            await promises_1.default.copyFile(node_path_1.default.join(tmplPath, "manifest.json"), node_path_1.default.join(outDir, "manifest.json"));
+            await promises_1.default.writeFile(node_path_1.default.join(outDir, "brief.md"), brief);
+            await promises_1.default.writeFile(node_path_1.default.join(outDir, "case-record.json"), JSON.stringify({ id, templateId, createdAt: (0, database_1.now)() }, null, 2));
             db().prepare("INSERT INTO cases(id,owner_id,worker_id,brief,stack,created_at) VALUES(?,?,?,?,?,?)").run(id, req.user.id, worker.id, brief, stack, (0, database_1.now)());
-            recordEvent(id, req.user.id, "case.created");
-            res.status(201).json({ id });
+            recordEvent(id, req.user.id, "case.created", { templateId });
+            res.status(201).json({ id, templateId });
         }
         catch (error) {
             next(error);
@@ -278,8 +424,8 @@ function createApp() {
             const record = caseForUser(String(req.params.id), req.user);
             const criteria = (0, criteria_approval_1.readStoredCriteria)(record.id).catch(() => undefined);
             const payment = (0, milestone_1.getPaymentRecord)(record.id).catch(() => undefined);
-            const result = readOptionalJson(node_path_1.default.resolve("out", record.id, "result.json"));
-            const review = readOptionalJson(node_path_1.default.resolve("out", record.id, "review.json"));
+            const result = readOptionalJson(node_path_1.default.resolve((0, paths_1.outputRoot)(), record.id, "result.json"));
+            const review = readOptionalJson(node_path_1.default.resolve((0, paths_1.outputRoot)(), record.id, "review.json"));
             const evidence = (0, evidence_1.readEvidence)(record.id);
             Promise.all([criteria, payment, result, review, evidence]).then(([c, p, verification, reviewRecord, paymentEvidence]) => {
                 const status = verification && typeof verification.decision === "string" ? verification.decision : record.status;
@@ -301,31 +447,6 @@ function createApp() {
             next(error);
         }
     });
-    app.get("/api/reviews/queue", requireAuth, async (req, res, next) => {
-        try {
-            if (req.user.role !== "reviewer") {
-                res.status(403).json({ error: "Reviewer access required." });
-                return;
-            }
-            const rows = db().prepare("SELECT id FROM cases ORDER BY created_at DESC").all();
-            const queue = [];
-            for (const row of rows) {
-                try {
-                    const review = await (0, review_handoff_1.readReview)(String(row.id));
-                    if (review.status === "pending") {
-                        const remaining = (0, review_handoff_1.timeRemaining)(review.expirationTime);
-                        queue.push({ id: row.id, decision: "escalated", expirationTime: review.expirationTime, timeRemaining: remaining.text, milliseconds: remaining.milliseconds, criteria: review.criteria });
-                    }
-                }
-                catch { /* Cases without a review handoff are not queue items. */ }
-            }
-            queue.sort((a, b) => a.milliseconds - b.milliseconds);
-            res.json(queue);
-        }
-        catch (error) {
-            next(error);
-        }
-    });
     app.post("/api/cases/:id/payout/refresh", requireAuth, async (req, res, next) => {
         try {
             const record = caseForUser(String(req.params.id), req.user);
@@ -334,7 +455,21 @@ function createApp() {
             const milestone = payment.milestones[payment.milestones.length - 1];
             if (milestone)
                 db().prepare("INSERT INTO payouts(case_id,paypal_batch_id,status,payload,created_at) VALUES(?,?,?,?,?)").run(record.id, milestone.payoutBatchId ?? null, milestone.payoutStatus ?? "unknown", JSON.stringify(milestone), (0, database_1.now)());
+            try {
+                await (0, evidence_1.checkBusinessBalance)(record.id);
+            }
+            catch { /* do not block the rest of the flow */ }
             res.json({ status, payment, evidence: await (0, evidence_1.readEvidence)(record.id) });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+    app.post("/api/cases/:id/balance", requireAuth, async (req, res, next) => {
+        try {
+            const record = caseForUser(String(req.params.id), req.user);
+            const balance = await (0, evidence_1.checkBusinessBalance)(record.id);
+            res.json({ balance, evidence: await (0, evidence_1.readEvidence)(record.id) });
         }
         catch (error) {
             next(error);
@@ -393,9 +528,24 @@ function createApp() {
             }
             if (action === "fund") {
                 const value = jsonBody(req);
-                const result = await (0, milestone_1.fundCase)(record.id, required(value, "amount"), required(value, "currency"));
+                const amount = required(value, "amount");
+                const currency = typeof value.currency === "string" ? value.currency : (process.env.PAYPAL_CURRENCY ?? "USD");
+                const method = value.method === "manual" ? "manual" : "card";
+                // Guard: criteria must be approved
+                const criteria = await (0, criteria_approval_1.readStoredCriteria)(record.id).catch(() => undefined);
+                if (!criteria || criteria.status !== "approved") {
+                    res.status(400).json({ error: "Criteria must be approved before funding." });
+                    return;
+                }
+                // Guard: refuse a second authorization for a case that already has one
+                const payment = await (0, milestone_1.getPaymentRecord)(record.id).catch(() => undefined);
+                if (payment && payment.authorizationId && payment.authorizationStatus !== "VOIDED") {
+                    res.status(400).json({ error: "Case already has an authorization." });
+                    return;
+                }
+                const result = await (0, milestone_1.fundCase)(record.id, amount, currency, method);
                 persistPayment(record.id, result);
-                recordEvent(record.id, req.user.id, "payment.funded");
+                recordEvent(record.id, req.user.id, "payment.funded", { method });
                 res.json(result);
                 return;
             }
@@ -409,7 +559,18 @@ function createApp() {
                 if (req.user.id !== record.workerId)
                     throw new Error("Only the assigned worker may submit verification.");
                 const worker = userById(record.workerId);
-                const result = await (0, verify_1.verify)(node_path_1.default.join("testset", "cases", record.id), node_path_1.default.join(uploadsRoot(), record.id), { buyerEmail: userById(record.ownerId)?.paypalEmail, contractorEmail: worker?.paypalEmail });
+                // caseDirFor: prefer out/<id> if it has tests (new template-based case), otherwise fall back to testset/cases/<id>
+                const outCaseDir = node_path_1.default.resolve((0, paths_1.outputRoot)(), record.id);
+                const testsetCaseDir = node_path_1.default.resolve("testset", "cases", record.id);
+                let caseDir;
+                try {
+                    await promises_1.default.access(node_path_1.default.join(outCaseDir, "tests"));
+                    caseDir = outCaseDir;
+                }
+                catch {
+                    caseDir = testsetCaseDir;
+                }
+                const result = await (0, verify_1.verify)(caseDir, node_path_1.default.join(uploadsRoot(), record.id), { buyerEmail: userById(record.ownerId)?.paypalEmail, contractorEmail: worker?.paypalEmail });
                 db().prepare("INSERT INTO verifications(case_id,decision,payload,created_at) VALUES(?,?,?,?)").run(record.id, result.decision, JSON.stringify(result), (0, database_1.now)());
                 recordEvent(record.id, req.user.id, "verification.completed", result);
                 res.json(result);
@@ -425,8 +586,8 @@ function createApp() {
                 return;
             }
             if (action === "review") {
-                if (req.user.role !== "reviewer") {
-                    res.status(403).json({ error: "Reviewer access required." });
+                if (record.ownerId !== req.user.id) {
+                    res.status(403).json({ error: "Only the client who owns this case can accept or decline it." });
                     return;
                 }
                 const decision = required(jsonBody(req), "decision");

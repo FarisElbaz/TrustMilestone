@@ -1,5 +1,20 @@
 # Delivery verifier notes
 
+## Sandbox Card Funding and Balance Verification Update (2026-11-12)
+
+- Default funding path updated to sandbox card route (`AUTHORIZE` order with `payment_source.card` populated from `PAYPAL_TEST_CARD_NUMBER`, `PAYPAL_TEST_CARD_EXPIRY`, `PAYPAL_TEST_CARD_SECURITY_CODE`, and `PAYPAL_TEST_CARD_NAME`).
+- A new `PayPal-Request-Id` is generated and persisted in `operations` for each new funding attempt.
+- Clear error returned naming any missing card variable without printing values.
+- Manual buyer approval link preserved as secondary option labeled "Fund with buyer approval (manual)".
+- UI updated with label "Sandbox card funding. No buyer approval needed. For demonstration only." next to funding button, and displays Order ID, Status, Authorization ID, and Expiration Time after funding.
+- State guards enforced: second authorization refused for cases already having one; funding refused if criteria not approved.
+- Balance check resilience: creates `out/<caseId>` folder on ENOENT; on PayPal 403 or 404 displays "Balance not verified: PayPal reporting permission not granted" in UI and records in `evidence.json` without blocking the rest of the flow.
+- Build result (`npm run build` in inner `PayPalAI`): PASS (exit code 0).
+- Test results (`npm test` in inner `PayPalAI`): 11 test suites passed, 54 tests passed.
+  - `tests/card-funding.test.ts`: PASS (5/5 tests: card request structure, missing card variables error, second authorization refusal, 403 not-verified message, ENOENT directory handling).
+  - `tests/app.test.ts` (6 tests) and `tests/ui-server.test.ts` (7 tests): failed with `connect EACCES 127.0.0.1` because the environment sandbox cannot bind a local port; marked "skipped in sandbox".
+  - `tests/verify.test.ts` (1 test): failed due to sandbox npm-cache permission (`EPERM: operation not permitted, stat 'C:\Users\elbaz\npm-cache\_cacache\...'`); logged as sandbox filesystem limitation.
+
 ## PayPal reliability hardening (2026-11-09)
 
 - Fixed `src/paypal/client.ts` so authenticated API calls send exactly
@@ -377,3 +392,61 @@ The hosted app runs the migration automatically. It uses `DATABASE_PATH` and
 | Three verdict outputs (pass/fail/unclear) | PASS | — | `release`/`reject`/`escalate` | — | Mock-verified via `tests/verdict-routing.test.ts`. |
 | Human approval UI & confirmations | PASS | — | `release`/`reject` | — | Mock-verified via `tests/ui.browser.spec.ts` (amount, contractor, void consequence enforced). |
 | Front-end stage display & console checks | PASS | — | `no console errors` | 200 | Verified across all 7 stages; screenshots saved to `docs/screenshots/`. |
+
+## app.test.ts fix (2026-11-12)
+
+- Added `templateId: "c01"` to the create-case JSON body in `tests/app.test.ts` (line 81). The app now requires `templateId` and was returning HTTP 400, causing the case not to be created and all three downstream security tests to fail.
+- Confirmed `testset/cases/c01` exists with `brief.md`, `manifest.json`, `reference/`, and `variants/`.
+- Route paths were correct — no path changes needed: `/api/cases/owned-case/review` and `/api/cases/owned-case/upload` both match `src/app.ts`.
+- Reran `tests/app.test.ts` outside the agent sandbox (loopback TCP required): **6/6 PASS**.
+  - `signs up, logs in, and rejects a wrong password`: PASS
+  - `rate limits repeated login attempts`: PASS
+  - `blocks a worker from another worker's case`: PASS
+  - `blocks clients from reviewer resolution routes`: PASS
+  - `rejects state changes without CSRF`: PASS
+  - `rejects upload path traversal`: PASS
+
+## Upload handler EPERM fix and write stream safety (2026-11-12)
+
+- Located upload temporary directory write and rename in `src/app.ts`: `data/submissions/<case-id>.uploading` renamed to `data/submissions/<case-id>`.
+- Refactored upload file writes to use explicit `WriteStream` instances (`createWriteStream`).
+- Each write stream is awaited to guarantee both the `finish` event has fired and the stream is fully closed (`close` event) before attempting any directory rename.
+- In `upload()`, if `fs.rename` throws `EPERM`, the handler falls back to `fs.cp(temp, root, { recursive: true })` to copy all uploaded files into the final folder, then cleans up the `.uploading` folder with `fs.rm(temp, { recursive: true, force: true })`, logging the fallback with `console.warn`.
+- Added test coverage in `tests/app.test.ts` verifying that uploading files for an existing case creates the destination directory and places the files inside.
+- Verified test submission uploads for existing case `case-upload-test-01` (both raw multipart files and ZIP extraction), confirming destination folder creation, file contents, and removal of `.uploading`.
+
+## Sandbox test runner fix and verification end-to-end (2026-11-12)
+
+### Changes made
+
+| File | Change |
+|---|---|
+| `src/sandbox.ts` | Fixed `caseId` extraction in `runTests`: now skips `reference` path segment so `testset/cases/<id>/reference/tests` correctly yields `<id>` as the case ID, not `"reference"`. Removed unused `fsSync` import. |
+| `tests/app.test.ts` | Added `closeDatabase()` call at the top of `beforeAll` so any DB singleton opened by an earlier test suite (e.g. `verify.test.ts`) is released before `DATABASE_PATH` is redirected to the temp file. Changed `afterAll` teardown to swallow EBUSY when removing `data/`—only the submissions sub-tree is strictly needed for isolation; the sqlite file may remain locked on Windows after `closeDatabase()` returns. |
+
+### c02 reference verification result
+
+`runTests("testset/cases/c02/reference", "testset/cases/c02/reference/tests")` — config files resolved from `testset/cases/c02/reference/`:
+
+| Test | Requirement | Status |
+|---|---|---|
+| applies a valid discount code | REQ-1 | ✓ passed |
+| rejects an unknown discount code | REQ-2 | ✓ passed |
+
+**Total: 2 passed, 0 failed.**
+
+### Build and test counts (2026-11-12, final)
+
+- `npm run build` (inner `PayPalAI`): **PASS** (exit code 0)
+- `npm test` (inner `PayPalAI`): **PASS — 14 suites, 69 tests passed, 0 failed**
+  - All 14 suites green including `app.test.ts`, `verify.test.ts`, `card-funding.test.ts`, `template-creation.test.ts`, `milestone-guards.test.ts`, `verdict-routing.test.ts`, `judge.test.ts`, `paypal.test.ts`, `criteria.test.ts`, `paypal-config.test.ts`, `route.test.ts`, `review-handoff.test.ts`, `criteria-approval.test.ts`, `ui-server.test.ts`.
+  - No suites skipped in this run; `app.test.ts` and `ui-server.test.ts` now bind a loopback port successfully when run outside the sandbox (BypassSandbox: true).
+
+## Test Isolation with Temporary Directories (2026-11-12)
+
+- Introduced `src/paths.ts` providing `outputRoot()`, which defaults to `path.resolve("out")` or respects `process.env.OUTPUT_ROOT`.
+- Updated all runtime modules (`src/app.ts`, `src/criteria-approval.ts`, `src/milestone.ts`, `src/review-handoff.ts`, `src/sandbox.ts`, `src/ui-server.ts`, `src/verify.ts`, and `src/paypal/evidence.ts`) to use `outputRoot()` rather than hardcoding `"out"`.
+- Isolated all test suites (`app.test.ts`, `verify.test.ts`, `card-funding.test.ts`, `criteria-approval.test.ts`, `milestone-guards.test.ts`, `review-handoff.test.ts`, `template-creation.test.ts`, `ui-server.test.ts`) so they write exclusively to temporary directories created in `beforeAll`/`beforeEach`.
+- Configured `DATABASE_PATH`, `OUTPUT_ROOT`, and `SUBMISSIONS_PATH` to temporary directories for integration tests.
+- Replaced the `fs.rm` try/catch block in `app.test.ts` that swallowed EBUSY on `data\` with strict cleanup targeting only `tempDir`. The tests never touch or clean the project's root `data\` or `out\` directories.
+- Full test run (`npm test`): **PASS — 14 suites passed, 69 tests passed, 0 failed**.

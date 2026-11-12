@@ -1,0 +1,56 @@
+{
+  "case": "c07",
+  "stack": "Node 20, Express, TypeScript, Jest, supertest",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Return an order by ID while hiding internal notes from regular customers."
+    },
+    {
+      "id": "REQ-2",
+      "text": "Return all order fields for administrators."
+    },
+    {
+      "id": "REQ-3",
+      "text": "Return 404 for an unknown order."
+    }
+  ],
+  "variants": [
+    {
+      "id": "V1_correct",
+      "change_description": "A different correct implementation of the same requirements.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    },
+    {
+      "id": "V2_subtle_bug",
+      "change_description": "Recognizes only the owner role as an administrator.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "shows all fields to admins"
+      ],
+      "requirements_affected": [
+        "REQ-2"
+      ]
+    },
+    {
+      "id": "V3_missing_feature",
+      "change_description": "Removes the unknown-order response check.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "returns 404 for unknown order"
+      ],
+      "requirements_affected": [
+        "REQ-3"
+      ]
+    },
+    {
+      "id": "V4_ambiguous",
+      "change_description": "Adds an unrequested order-list endpoint.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    }
+  ]
+}

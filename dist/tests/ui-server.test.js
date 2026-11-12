@@ -4,8 +4,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const promises_1 = __importDefault(require("node:fs/promises"));
+const node_os_1 = __importDefault(require("node:os"));
 const node_path_1 = __importDefault(require("node:path"));
 const ui_server_1 = require("../src/ui-server");
+let tempDir;
+const caseOut = (caseId) => node_path_1.default.join(tempDir, caseId);
+beforeAll(async () => {
+    tempDir = await promises_1.default.mkdtemp(node_path_1.default.join(node_os_1.default.tmpdir(), "ui-server-test-"));
+    process.env.OUTPUT_ROOT = tempDir;
+});
+afterAll(async () => {
+    await promises_1.default.rm(tempDir, { recursive: true, force: true });
+});
 jest.mock("../src/criteria-approval", () => ({
     approveStoredCriteria: jest.fn(async () => ({ caseId: "ui-case", status: "approved", criteria: [], open_questions: [], out_of_scope: [] })),
     proposeCriteria: jest.fn(async () => ({ caseId: "ui-case", status: "proposed", criteria: [], open_questions: [], out_of_scope: [] })),
@@ -22,7 +32,7 @@ jest.mock("../src/review-handoff", () => ({
     readReview: jest.fn(async () => ({ caseId: "ui-case", status: "pending", expirationTime: new Date(Date.now() - 1000).toISOString() })),
     resolveReviewHandoff: jest.fn(async () => ({ caseId: "ui-case", status: "resolved", decision: "release" })),
     timeRemaining: jest.fn(() => ({ milliseconds: -1000, text: "0h 0m", warning: true })),
-    reviewMarkdownPath: (caseId) => node_path_1.default.resolve("out", caseId, "review.md")
+    reviewMarkdownPath: (caseId) => node_path_1.default.resolve(process.env.OUTPUT_ROOT ?? "out", caseId, "review.md")
 }));
 const criteriaModule = jest.requireMock("../src/criteria-approval");
 const reviewModule = jest.requireMock("../src/review-handoff");
@@ -41,7 +51,7 @@ async function request(base, pathname, init) {
 }
 afterEach(async () => {
     jest.clearAllMocks();
-    await promises_1.default.rm(node_path_1.default.resolve("out", "ui-case"), { recursive: true, force: true });
+    await promises_1.default.rm(caseOut("ui-case"), { recursive: true, force: true });
 });
 test("creates a case and rejects a duplicate ID", async () => {
     const { server, base } = await start();
@@ -69,9 +79,9 @@ test("gates funding until criteria are approved", async () => {
 test("generates criteria without requiring an empty JSON request body", async () => {
     const { server, base } = await start();
     try {
-        await promises_1.default.mkdir(node_path_1.default.resolve("out", "ui-case"), { recursive: true });
-        await promises_1.default.writeFile(node_path_1.default.resolve("out", "ui-case", "brief.md"), "Build a widget");
-        await promises_1.default.writeFile(node_path_1.default.resolve("out", "ui-case", "manifest.json"), JSON.stringify({ stack: "Node 20" }));
+        await promises_1.default.mkdir(caseOut("ui-case"), { recursive: true });
+        await promises_1.default.writeFile(node_path_1.default.join(caseOut("ui-case"), "brief.md"), "Build a widget");
+        await promises_1.default.writeFile(node_path_1.default.join(caseOut("ui-case"), "manifest.json"), JSON.stringify({ stack: "Node 20" }));
         const result = await request(base, "/api/cases/ui-case/criteria", { method: "POST" });
         expect(result).toMatchObject({ status: 200, body: { status: "proposed" } });
     }

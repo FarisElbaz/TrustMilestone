@@ -1,0 +1,54 @@
+{
+  "caseId": "case1",
+  "summary": "Build a backend service in Node 20 that accepts a product ID and quantity to place an order, generating an order ID, calculating the total price, and rejecting negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project runtime environment uses Node 20.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "The service accepts an input containing a product ID and a quantity.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "The service provides a new order ID in the response upon successfully placing an order.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C4",
+      "criterion": "The service calculates the total price based on the product price and the requested quantity.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "A negative quantity is rejected with a bad-request response and a clear error message.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "How should product prices be retrieved (e.g., hardcoded, database, external API), and what data structure should the input and output use?",
+      "affects": [
+        "C4"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-12T13:21:49.725Z",
+  "approvedAt": "2026-11-12T13:21:57.913Z",
+  "approvedBy": "Faris ElBaz"
+}

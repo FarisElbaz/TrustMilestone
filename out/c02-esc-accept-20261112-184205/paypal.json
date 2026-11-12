@@ -1,0 +1,81 @@
+{
+  "caseId": "c02-esc-accept-20261112-184205",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-12T18:42:53.985Z",
+  "milestones": [
+    {
+      "number": 1,
+      "amount": "10.00",
+      "status": "released_unverified",
+      "timestamp": "2026-11-12T18:47:18.183Z",
+      "captureId": "8H715439TJ099942N",
+      "invoiceId": "milestone-5acbcedb-3d5e-4f3d-948f-d28d0f44c809",
+      "captureStatus": "COMPLETED",
+      "payoutBatchId": "EFQNY2T6R5WRY",
+      "payoutStatus": "PENDING",
+      "payoutItemStatuses": [
+        "PENDING"
+      ]
+    }
+  ],
+  "paypalResponses": [
+    {
+      "operation": "create-order",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T18:42:58.799Z"
+    },
+    {
+      "operation": "authorize-order",
+      "status": "CREATED",
+      "recordedAt": "2026-11-12T18:43:01.231Z"
+    },
+    {
+      "operation": "capture",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T18:47:27.417Z"
+    },
+    {
+      "operation": "payout-status",
+      "status": "PENDING",
+      "recordedAt": "2026-11-12T18:47:29.895Z"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "083dd56d-f069-4506-83d7-be36cc31beab",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T18:42:58.799Z"
+    },
+    {
+      "operation": "capture",
+      "requestId": "1075a0e3-ac0c-4c69-855f-10a3fc1635f3",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T18:47:27.416Z"
+    },
+    {
+      "operation": "payout",
+      "requestId": "c3dd3694-9a67-4fc9-b13d-b15e539bb954",
+      "status": "PENDING",
+      "recordedAt": "2026-11-12T18:47:28.795Z"
+    }
+  ],
+  "orderId": "5XJ69866T22460625",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "3AR45378JW827931A",
+  "authorizedAt": "2026-11-12T18:43:01.231Z",
+  "authorizationStatus": "CREATED",
+  "authorizationResponseStatus": "CREATED",
+  "authorizationExpirationTime": "2026-12-11T18:42:57Z",
+  "authorizationAmount": "10.00",
+  "authorizationCurrency": "USD",
+  "escalation": {
+    "deadline": "2026-11-13T18:47:16.766Z",
+    "recordedAt": "2026-11-12T18:47:16.767Z"
+  },
+  "hold": {
+    "deadline": "2026-11-13T18:47:16.766Z",
+    "recordedAt": "2026-11-12T18:47:16.767Z"
+  }
+}

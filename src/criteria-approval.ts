@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { generateCriteria, type Criteria, type ModelCall } from "./criteria";
 import { loadConfig } from "./config";
+import { outputRoot } from "./paths";
 
 export type CriteriaStatus = "proposed" | "approved" | "cancelled";
 export interface StoredCriteria extends Criteria {
@@ -12,7 +13,7 @@ export interface StoredCriteria extends Criteria {
   approvedBy?: string;
 }
 
-export const criteriaPath = (caseId: string): string => path.resolve("out", caseId, "criteria.json");
+export const criteriaPath = (caseId: string): string => path.resolve(outputRoot(), caseId, "criteria.json");
 
 async function writeCriteria(caseId: string, criteria: StoredCriteria): Promise<void> {
   await fs.mkdir(path.dirname(criteriaPath(caseId)), { recursive: true });

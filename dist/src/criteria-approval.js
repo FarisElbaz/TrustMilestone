@@ -15,7 +15,8 @@ const promises_1 = __importDefault(require("node:fs/promises"));
 const node_path_1 = __importDefault(require("node:path"));
 const criteria_1 = require("./criteria");
 const config_1 = require("./config");
-const criteriaPath = (caseId) => node_path_1.default.resolve("out", caseId, "criteria.json");
+const paths_1 = require("./paths");
+const criteriaPath = (caseId) => node_path_1.default.resolve((0, paths_1.outputRoot)(), caseId, "criteria.json");
 exports.criteriaPath = criteriaPath;
 async function writeCriteria(caseId, criteria) {
     await promises_1.default.mkdir(node_path_1.default.dirname((0, exports.criteriaPath)(caseId)), { recursive: true });

@@ -1,0 +1,54 @@
+{
+  "caseId": "c02-esc-accept-20261112-184205",
+  "summary": "Implement a discount code validation and calculation feature for product orders.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The application must be built using Node 20, Express, and TypeScript.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "STACK AND CONSTRAINTS"
+    },
+    {
+      "id": "C2",
+      "criterion": "The API must accept a discount code and return the original amount, savings, and final amount in the response body.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "I want to use a discount code when ordering a product. The price should be reduced by the valid code I provide, and I want to see the original amount, savings, and final amount."
+    },
+    {
+      "id": "C3",
+      "criterion": "The API must return an error response when an unknown discount code is provided.",
+      "method": "test",
+      "status": "ready",
+      "source": "An unknown code should be refused."
+    },
+    {
+      "id": "C4",
+      "criterion": "The project must include automated tests using Jest and supertest.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "STACK AND CONSTRAINTS"
+    },
+    {
+      "id": "C5",
+      "criterion": "A person must confirm the README explains how to install and run the project.",
+      "method": "manual",
+      "status": "ready",
+      "source": "Client revision note: a person must confirm the README explains how to install and run the project."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What is the specific data structure/schema for the request and response, and what are the valid discount codes?",
+      "affects": [
+        "C2"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-12T18:42:52.963Z",
+  "approvedAt": "2026-11-12T18:42:53.448Z",
+  "approvedBy": "Demo Client"
+}

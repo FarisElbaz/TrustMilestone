@@ -112,15 +112,15 @@
         <form id="auth-form"><div id="name-field" class="hidden"><label for="auth-name">Name<input id="auth-name" name="name" autocomplete="name"></label></div>
           <label for="auth-email">Email<input id="auth-email" name="email" type="email" autocomplete="email" required></label>
           <label for="auth-password">Password<input id="auth-password" name="password" type="password" minlength="10" autocomplete="current-password" required><span class="muted">At least 10 characters.</span></label>
-          <div id="role-fields" class="hidden"><label for="auth-role">Role<select id="auth-role" name="role"><option value="client">Client</option><option value="worker">Worker</option><option value="reviewer">Reviewer</option></select></label><label for="auth-paypal">PayPal sandbox email<input id="auth-paypal" name="paypalEmail" type="email"></label></div>
+          <div id="role-fields" class="hidden"><label for="auth-role">Role<select id="auth-role" name="role"><option value="client">Client</option><option value="worker">Worker</option></select></label><label for="auth-paypal">PayPal sandbox email<input id="auth-paypal" name="paypalEmail" type="email"></label></div>
           <button class="button primary" id="auth-submit" type="submit">Sign in</button>
         </form>
       </section>
-      <aside class="panel"><p class="eyebrow">Access by role</p><h2>One record, clear responsibility.</h2><ul class="role-list"><li><strong>Client</strong>Define criteria, fund authorization, and decide the result.</li><li><strong>Worker</strong>Upload the delivery and see the verification and payout status.</li><li><strong>Reviewer</strong>Resolve escalated cases before the authorization expires.</li></ul></aside>
+      <aside class="panel"><p class="eyebrow">Access by role</p><h2>One record, clear responsibility.</h2><ul class="role-list"><li><strong>Client</strong>Define criteria, fund authorization, and decide the result.</li><li><strong>Worker</strong>Upload the delivery and see the verification and payout status.</li></ul></aside>
     </div>
   </section>
   <div id="app-view" class="app-shell hidden">
-    <aside class="sidebar"><a class="brand" href="#dashboard"><span class="brand-mark">M</span><span>Milestone desk</span></a><nav class="nav" aria-label="Primary"><button data-page="dashboard">Cases</button><button data-page="reviewer">Reviewer queue</button><button data-page="worker">Worker view</button></nav><div class="sidebar-footer"><span id="user-label" class="muted"></span><button id="theme-toggle" class="theme-toggle" type="button">Use dark theme</button><button id="logout" class="button" type="button">Sign out</button></div></aside>
+    <aside class="sidebar"><a class="brand" href="#dashboard"><span class="brand-mark">M</span><span>Milestone desk</span></a><nav class="nav" aria-label="Primary"><button data-page="dashboard">Cases</button><button data-page="worker">Worker view</button></nav><div class="sidebar-footer"><span id="user-label" class="muted"></span><button id="theme-toggle" class="theme-toggle" type="button">Use dark theme</button><button id="logout" class="button" type="button">Sign out</button></div></aside>
     <header class="topbar"><a class="brand" href="#dashboard"><span class="brand-mark">M</span><span>Milestone desk</span></a><button id="mobile-menu" class="button small" type="button" aria-expanded="false">Menu</button></header>
     <main class="main"><div id="app-error" class="alert error hidden" role="alert"></div><div id="page"></div></main>
   </div>

@@ -1,0 +1,52 @@
+{
+  "case": "c02",
+  "stack": "Node 20, Express, TypeScript, Jest, supertest",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Apply one valid discount code and return subtotal, discount, and total."
+    },
+    {
+      "id": "REQ-2",
+      "text": "Reject an unknown discount code with HTTP 400."
+    }
+  ],
+  "variants": [
+    {
+      "id": "V1_correct",
+      "change_description": "A different correct implementation of the same requirements.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    },
+    {
+      "id": "V2_subtle_bug",
+      "change_description": "Skips the invalid-code response, allowing an unknown code to continue.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "applies a valid discount code"
+      ],
+      "requirements_affected": [
+        "REQ-1"
+      ]
+    },
+    {
+      "id": "V3_missing_feature",
+      "change_description": "Removes validation for discount codes entirely.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "rejects an unknown discount code"
+      ],
+      "requirements_affected": [
+        "REQ-2"
+      ]
+    },
+    {
+      "id": "V4_ambiguous",
+      "change_description": "Interprets the discount input as one code and does not define stacking for multiple codes.",
+      "expected_verdict": "unclear",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    }
+  ]
+}

@@ -7,13 +7,14 @@ import { approveStoredCriteria, proposeCriteria, readStoredCriteria, type Stored
 import { getPaymentRecord, paymentStatus, fundCase, refreshPayoutStatus } from "./milestone";
 import { readReview, resolveReviewHandoff, timeRemaining, reviewMarkdownPath } from "./review-handoff";
 import { verify } from "./verify";
+import { outputRoot } from "./paths";
 
 const port = Number(process.env.UI_PORT ?? 3000);
 const host = "127.0.0.1";
 const publicDirectory = path.resolve(__dirname, "..", "public");
 const maxUploadBytes = 50 * 1024 * 1024;
 const idPattern = /^[A-Za-z0-9._-]+$/;
-const caseRoot = (caseId: string) => path.resolve("out", caseId);
+const caseRoot = (caseId: string) => path.resolve(outputRoot(), caseId);
 const caseFile = (caseId: string, name: string) => path.join(caseRoot(caseId), name);
 
 export interface UiServerOptions {
@@ -58,7 +59,7 @@ async function readOptionalJson(filename: string): Promise<Record<string, unknow
 
 async function listCaseIds(): Promise<string[]> {
   const ids = new Set<string>();
-  for (const root of [path.resolve("testset", "cases"), path.resolve("out")]) {
+  for (const root of [path.resolve("testset", "cases"), outputRoot()]) {
     try {
       for (const entry of await fs.readdir(root, { withFileTypes: true })) if (entry.isDirectory() && idPattern.test(entry.name)) ids.add(entry.name);
     } catch (error) {

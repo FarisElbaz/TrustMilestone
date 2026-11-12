@@ -1,0 +1,73 @@
+{
+  "caseId": "c02-ui-20261112-182604",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-12T18:26:20.051Z",
+  "milestones": [
+    {
+      "number": 1,
+      "amount": "10.00",
+      "status": "released_unverified",
+      "timestamp": "2026-11-12T18:32:45.974Z",
+      "captureId": "8XH24201A3927343X",
+      "invoiceId": "milestone-629193de-59a6-4357-888f-d25a07efe635",
+      "captureStatus": "COMPLETED",
+      "payoutBatchId": "ASGW8FHAB3R6E",
+      "payoutStatus": "PENDING",
+      "payoutItemStatuses": [
+        "PENDING"
+      ]
+    }
+  ],
+  "paypalResponses": [
+    {
+      "operation": "create-order",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T18:26:25.198Z"
+    },
+    {
+      "operation": "authorize-order",
+      "status": "CREATED",
+      "recordedAt": "2026-11-12T18:26:26.706Z"
+    },
+    {
+      "operation": "capture",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T18:32:48.463Z"
+    },
+    {
+      "operation": "payout-status",
+      "status": "PENDING",
+      "recordedAt": "2026-11-12T18:32:51.220Z"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "d55f5aef-3766-46ae-8728-00e0968838a5",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T18:26:25.198Z"
+    },
+    {
+      "operation": "capture",
+      "requestId": "2488ba74-cca2-4aee-8459-6d154a530461",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T18:32:48.462Z"
+    },
+    {
+      "operation": "payout",
+      "requestId": "4e9c12ad-e332-4856-8292-07fd932e7fb5",
+      "status": "PENDING",
+      "recordedAt": "2026-11-12T18:32:49.730Z"
+    }
+  ],
+  "orderId": "3WN35158L27177411",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "7MJ546739R704534W",
+  "authorizedAt": "2026-11-12T18:26:26.706Z",
+  "authorizationStatus": "CREATED",
+  "authorizationResponseStatus": "CREATED",
+  "authorizationExpirationTime": "2026-12-11T18:26:24Z",
+  "authorizationAmount": "10.00",
+  "authorizationCurrency": "USD"
+}
