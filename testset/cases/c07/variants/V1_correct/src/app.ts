@@ -1,0 +1,3 @@
+import express from "express"; const app=express();
+const orders:Record<string,any>={o1:{id:"o1",status:"paid",total:42,customerEmail:"a@example.com",internalNote:"gift"}};
+app.get("/orders/:id",(req,res)=>{const o=orders[req.params.id]; if(!o)return res.status(404).json({error:"not found"}); const role=req.header("x-role")||"customer"; if(role==="admin")return res.json(o); const {internalNote,...publicOrder}=o; return res.json(publicOrder);}); export default app;

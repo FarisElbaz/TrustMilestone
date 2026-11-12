@@ -1,0 +1,56 @@
+{
+  "case": "c06",
+  "stack": "Node 20, Express, TypeScript, Jest, supertest",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Create a refund for a known order no more than 30 days old."
+    },
+    {
+      "id": "REQ-2",
+      "text": "Reject orders outside the 30-day refund window."
+    },
+    {
+      "id": "REQ-3",
+      "text": "Reject non-positive refund amounts and unknown orders."
+    }
+  ],
+  "variants": [
+    {
+      "id": "V1_correct",
+      "change_description": "A different correct implementation of the same requirements.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    },
+    {
+      "id": "V2_subtle_bug",
+      "change_description": "Treats a refund exactly 30 days old as outside the window.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "accepts a refund exactly 30 days old"
+      ],
+      "requirements_affected": [
+        "REQ-2"
+      ]
+    },
+    {
+      "id": "V3_missing_feature",
+      "change_description": "Removes refund amount validation.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "rejects an invalid refund amount"
+      ],
+      "requirements_affected": [
+        "REQ-3"
+      ]
+    },
+    {
+      "id": "V4_ambiguous",
+      "change_description": "Adds an unrequested refund-list endpoint.",
+      "expected_verdict": "unclear",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    }
+  ]
+}

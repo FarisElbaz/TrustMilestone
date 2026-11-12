@@ -1,0 +1,54 @@
+{
+  "caseId": "case10",
+  "summary": "Implement an API endpoint to retrieve order details based on user role and order existence.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The application must be built using Node 20.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "STACK AND CONSTRAINTS: Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "A request for an order ID that does not exist returns an HTTP 404 status code.",
+      "method": "test",
+      "status": "ready",
+      "source": "an unknown order should be reported as not found"
+    },
+    {
+      "id": "C3",
+      "criterion": "A request from a regular customer returns order details excluding the 'internal notes' field.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "Regular customers should see the useful order details but not private internal notes."
+    },
+    {
+      "id": "C4",
+      "criterion": "A request from an administrator returns the full order object including 'internal notes'.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "Administrators should be able to see the full order"
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "How should the user's role (regular customer vs administrator) be identified in the request (e.g., JWT, header, session)?",
+      "affects": [
+        "C3",
+        "C4"
+      ]
+    },
+    {
+      "question": "What specific fields constitute 'useful order details' for a regular customer?",
+      "affects": [
+        "C3"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-12T19:46:36.535Z",
+  "approvedAt": "2026-11-12T19:47:03.312Z",
+  "approvedBy": "Demo Client"
+}

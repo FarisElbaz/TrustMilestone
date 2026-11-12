@@ -1,0 +1,44 @@
+{
+  "caseId": "Test2",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-12T17:18:01.339Z",
+  "milestones": [],
+  "paypalResponses": [
+    {
+      "operation": "create-order",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T17:18:05.329Z"
+    },
+    {
+      "operation": "authorize-order",
+      "status": "CREATED",
+      "recordedAt": "2026-11-12T17:18:06.656Z"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "431d1cfa-4a86-4de2-a726-43202d489041",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T17:18:05.329Z"
+    }
+  ],
+  "orderId": "8M2519226C003462G",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "0XY58646B8945943Y",
+  "authorizedAt": "2026-11-12T17:18:06.656Z",
+  "authorizationStatus": "CREATED",
+  "authorizationResponseStatus": "CREATED",
+  "authorizationExpirationTime": "2026-12-11T17:18:04Z",
+  "authorizationAmount": "10.00",
+  "authorizationCurrency": "USD",
+  "escalation": {
+    "deadline": "2026-11-13T17:23:34.819Z",
+    "recordedAt": "2026-11-12T17:23:34.820Z"
+  },
+  "hold": {
+    "deadline": "2026-11-13T17:23:34.819Z",
+    "recordedAt": "2026-11-12T17:23:34.820Z"
+  }
+}

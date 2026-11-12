@@ -1,0 +1,1 @@
+Please add a product and quantity to a shopping cart. If that product is already in the cart, increase its existing quantity instead of creating a second line. Quantities must be positive whole numbers, and an unknown cart should be reported.

@@ -1,0 +1,36 @@
+{
+  "caseId": "c1",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-12T15:30:12.680Z",
+  "milestones": [],
+  "paypalResponses": [
+    {
+      "operation": "create-order",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T15:30:16.505Z"
+    },
+    {
+      "operation": "authorize-order",
+      "status": "CREATED",
+      "recordedAt": "2026-11-12T15:30:18.853Z"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "5c03e39b-df5f-4e67-9c6f-c0840a5462bf",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T15:30:16.505Z"
+    }
+  ],
+  "orderId": "1P081255WK811703F",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "9JS19439EB8669154",
+  "authorizedAt": "2026-11-12T15:30:18.853Z",
+  "authorizationStatus": "CREATED",
+  "authorizationResponseStatus": "CREATED",
+  "authorizationExpirationTime": "2026-12-11T15:30:15Z",
+  "authorizationAmount": "10.00",
+  "authorizationCurrency": "USD"
+}

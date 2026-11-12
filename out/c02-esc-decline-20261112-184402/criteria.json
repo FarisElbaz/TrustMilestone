@@ -1,0 +1,60 @@
+{
+  "caseId": "c02-esc-decline-20261112-184402",
+  "summary": "Implement an order endpoint with discount code processing that returns original amount, savings, and final amount, built with Node 20, Express, TypeScript, Jest, and supertest.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project uses Node 20, Express, TypeScript, Jest, and supertest as verified by package.json dependencies and build/test configuration.",
+      "method": "test",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "Applying a valid discount code reduces the price of the product.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "I want to use a discount code when ordering a product. The price should be reduced by the valid code I provide"
+    },
+    {
+      "id": "C3",
+      "criterion": "The response includes the original amount, savings, and final amount when a valid code is provided.",
+      "method": "test",
+      "status": "ready",
+      "source": "I want to see the original amount, savings, and final amount."
+    },
+    {
+      "id": "C4",
+      "criterion": "An unknown discount code is refused.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "An unknown code should be refused."
+    },
+    {
+      "id": "C5",
+      "criterion": "A person must confirm the README explains how to install and run the project.",
+      "method": "manual",
+      "status": "ready",
+      "source": "Client revision note: a person must confirm the README explains how to install and run the project."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What constitutes a valid discount code and what specific values or storage mechanism should be used?",
+      "affects": [
+        "C2"
+      ]
+    },
+    {
+      "question": "What HTTP status code and response body format should be returned when an unknown discount code is refused?",
+      "affects": [
+        "C4"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-12T18:47:43.807Z",
+  "approvedAt": "2026-11-12T18:47:44.204Z",
+  "approvedBy": "Demo Client"
+}

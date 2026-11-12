@@ -1,0 +1,92 @@
+{
+  "caseId": "release-run",
+  "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\testset\\cases\\c01\\variants\\V1_correct",
+  "timestamp": "2026-11-11T12:56:53.738Z",
+  "models": {
+    "criteria_generator": "gemini-3.5-flash-lite",
+    "code_review_judge": "gemini-3.5-flash-lite"
+  },
+  "decision": "release",
+  "failingCriteria": [],
+  "evidence": [],
+  "outcomes": [
+    {
+      "id": "C2",
+      "method": "test",
+      "result": "pass",
+      "evidence": [
+        {
+          "name": "rejects a negative quantity",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-2"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "method": "test",
+      "result": "pass",
+      "evidence": [
+        {
+          "name": "creates an order with its total",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C4",
+      "method": "test",
+      "result": "pass",
+      "evidence": [
+        {
+          "name": "creates an order with its total",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C5",
+      "method": "test",
+      "result": "pass",
+      "evidence": [
+        {
+          "name": "rejects a negative quantity",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-2"
+        }
+      ]
+    },
+    {
+      "id": "C1",
+      "method": "code_review",
+      "result": "pass",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "Existing approved code-review result",
+            "files": []
+          },
+          {
+            "verdict": "pass",
+            "reason": "Existing approved code-review result",
+            "files": []
+          },
+          {
+            "verdict": "pass",
+            "reason": "Existing approved code-review result",
+            "files": []
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    }
+  ]
+}

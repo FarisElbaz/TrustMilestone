@@ -1,0 +1,25 @@
+{
+  "caseId": "live-approval-20261110",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-10T12:49:35.416Z",
+  "milestones": [],
+  "paypalResponses": [
+    {
+      "operation": "create-order",
+      "status": "CREATED",
+      "recordedAt": "2026-11-10T12:49:37.184Z"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "eda31b9f-f18d-44c1-be8a-5a696dccaa33",
+      "status": "CREATED",
+      "recordedAt": "2026-11-10T12:49:37.184Z"
+    }
+  ],
+  "orderId": "61K86541CV3350104",
+  "approvalUrl": "https://www.sandbox.paypal.com/checkoutnow?token=61K86541CV3350104",
+  "orderStatus": "CREATED"
+}

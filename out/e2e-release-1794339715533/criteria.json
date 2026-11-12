@@ -1,0 +1,54 @@
+{
+  "caseId": "e2e-release-1794339715533",
+  "summary": "Build a Node 20 Express TypeScript service to place an order given a product ID and quantity, returning a new order ID and total price, and rejecting negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project builds successfully using TypeScript and runs on Node 20.",
+      "method": "test",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "Accepts a POST request with product ID and quantity, and responds with a new order ID and calculated total price based on the product price.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want. The service should provide a new order ID and calculate the total price from the product price."
+    },
+    {
+      "id": "C3",
+      "criterion": "Returns a bad-request response when a negative quantity is provided.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    },
+    {
+      "id": "C4",
+      "criterion": "Tests are implemented using Jest and supertest.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Jest, supertest"
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What is the endpoint path, HTTP method, expected JSON request body structure, and expected JSON response structure for placing an order?",
+      "affects": [
+        "C2"
+      ]
+    },
+    {
+      "question": "Where are product prices retrieved from (e.g., a database, an in-memory store, or another source), and what is the specific HTTP status code and response body format for the bad-request response?",
+      "affects": [
+        "C2",
+        "C3"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:42:01.858Z",
+  "approvedAt": "2026-11-10T19:42:01.869Z",
+  "approvedBy": "E2E client"
+}

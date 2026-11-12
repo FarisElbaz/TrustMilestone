@@ -1,0 +1,74 @@
+{
+  "caseId": "c02-esc-decline-20261112-184402",
+  "submissionPath": "c:\\Users\\elbaz\\PayPalAI\\PayPalAI\\data\\submissions\\c02-esc-decline-20261112-184402",
+  "escalatedAt": "2026-11-12T18:48:05.835Z",
+  "criteria": [
+    {
+      "id": "C1",
+      "verdict": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "verdict": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "verdict": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C4",
+      "verdict": "pass",
+      "reason": "All matching tests passed: rejects an unknown discount code",
+      "evidence": [
+        {
+          "name": "rejects an unknown discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-2"
+        }
+      ]
+    },
+    {
+      "id": "C5",
+      "verdict": "unclear",
+      "reason": "Manual review is required.",
+      "evidence": "manual review required"
+    }
+  ],
+  "authorizationId": "0BM55146BR995893K",
+  "expirationTime": "2026-12-11T18:47:47Z",
+  "status": "resolved",
+  "decision": "reject",
+  "decidedAt": "2026-11-12T18:48:09.838Z",
+  "operator": "Demo Client",
+  "paypalIds": {
+    "authorizationId": "0BM55146BR995893K"
+  }
+}

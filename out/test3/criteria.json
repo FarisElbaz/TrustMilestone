@@ -1,0 +1,54 @@
+{
+  "caseId": "test3",
+  "summary": "Implement discount code functionality for product orders showing original amount, savings, and final amount, with validation for unknown codes.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The application runs on Node 20.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "Applying a valid discount code reduces the price of the product by the value associated with the code.",
+      "method": "test",
+      "status": "ready",
+      "source": "The price should be reduced by the valid code I provide"
+    },
+    {
+      "id": "C3",
+      "criterion": "The order output includes the original amount.",
+      "method": "test",
+      "status": "ready",
+      "source": "I want to see the original amount"
+    },
+    {
+      "id": "C4",
+      "criterion": "The order output includes the savings amount.",
+      "method": "test",
+      "status": "ready",
+      "source": "savings"
+    },
+    {
+      "id": "C5",
+      "criterion": "The order output includes the final amount.",
+      "method": "test",
+      "status": "ready",
+      "source": "final amount"
+    },
+    {
+      "id": "C6",
+      "criterion": "Providing an unknown discount code is refused and prevents the discount from being applied.",
+      "method": "test",
+      "status": "ready",
+      "source": "An unknown code should be refused."
+    }
+  ],
+  "open_questions": [],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-12T17:41:21.344Z",
+  "approvedAt": "2026-11-12T17:41:25.491Z",
+  "approvedBy": "Natsuki Subaru"
+}

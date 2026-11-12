@@ -1,0 +1,65 @@
+{
+  "caseId": "c02-ui-20261112-182416",
+  "summary": "Implement a discount code validation and calculation endpoint for product orders.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The application must be built using Node 20, Express, and TypeScript.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "STACK AND CONSTRAINTS"
+    },
+    {
+      "id": "C2",
+      "criterion": "The API must return a JSON response containing 'originalAmount', 'savings', and 'finalAmount' when a valid discount code is applied.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "I want to see the original amount, savings, and final amount."
+    },
+    {
+      "id": "C3",
+      "criterion": "The API must return an HTTP 400 or 404 error when an unknown discount code is provided.",
+      "method": "test",
+      "status": "ready",
+      "source": "An unknown code should be refused."
+    },
+    {
+      "id": "C4",
+      "criterion": "The codebase must include Jest and supertest for automated testing.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "STACK AND CONSTRAINTS"
+    },
+    {
+      "id": "C5",
+      "criterion": "The final amount must be calculated as the original amount minus the savings derived from the discount code.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "The price should be reduced by the valid code I provide"
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What is the source of truth for valid discount codes (e.g., database, hardcoded list, external API)?",
+      "affects": [
+        "C2",
+        "C3"
+      ]
+    },
+    {
+      "question": "What are the specific discount rules (e.g., percentage off, fixed amount off)?",
+      "affects": [
+        "C2",
+        "C5"
+      ]
+    }
+  ],
+  "out_of_scope": [
+    "UI/UX design for displaying the amounts",
+    "Persistence layer implementation details"
+  ],
+  "status": "approved",
+  "proposedAt": "2026-11-12T18:25:01.267Z",
+  "approvedAt": "2026-11-12T18:25:01.491Z",
+  "approvedBy": "Demo Client"
+}

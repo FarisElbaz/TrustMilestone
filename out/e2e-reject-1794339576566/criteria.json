@@ -1,0 +1,54 @@
+{
+  "caseId": "e2e-reject-1794339576566",
+  "summary": "Build a Node 20 Express TypeScript service to place an order given a product ID and quantity, returning a new order ID and total price, and rejecting negative quantities with a bad-request response.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project uses Node 20, Express, TypeScript, Jest, and supertest.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "Accepts an order request containing a product ID and a quantity.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "Returns a response containing a new order ID upon successful order placement.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C4",
+      "criterion": "Calculates the total price for the order derived from the product price.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "Rejects a negative quantity with a bad-request response (HTTP 400).",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "Where are product prices retrieved from (e.g., an in-memory list, database, or external API)?",
+      "affects": [
+        "C4"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:39:38.302Z",
+  "approvedAt": "2026-11-10T19:39:38.315Z",
+  "approvedBy": "E2E client"
+}

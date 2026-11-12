@@ -1,0 +1,1 @@
+A basic website that has blue and green gradients to display data

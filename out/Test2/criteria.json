@@ -1,0 +1,61 @@
+{
+  "caseId": "Test2",
+  "summary": "Implement discount code functionality for product orders showing original amount, savings, and final amount, while refusing unknown codes.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The application runs on Node 20.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "Applying a valid discount code reduces the product price by the value of the code.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "The price should be reduced by the valid code I provide"
+    },
+    {
+      "id": "C3",
+      "criterion": "The output displays the original amount, savings, and final amount when a valid code is used.",
+      "method": "test",
+      "status": "ready",
+      "source": "I want to see the original amount, savings, and final amount"
+    },
+    {
+      "id": "C4",
+      "criterion": "An unknown or invalid discount code is refused.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "An unknown code should be refused"
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What is the specific data structure, API endpoint, or function signature required for ordering a product and applying a discount code?",
+      "affects": [
+        "C2",
+        "C3",
+        "C4"
+      ]
+    },
+    {
+      "question": "What defines a 'valid code' (e.g., specific codes, percentage vs fixed amount)?",
+      "affects": [
+        "C2"
+      ]
+    },
+    {
+      "question": "How should an unknown code refusal be presented (e.g., error message, HTTP status code)?",
+      "affects": [
+        "C4"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-12T17:17:25.224Z",
+  "approvedAt": "2026-11-12T17:17:58.468Z",
+  "approvedBy": "Natsuki Subaru"
+}

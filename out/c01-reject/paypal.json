@@ -1,0 +1,37 @@
+{
+  "caseId": "c01-reject",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-12T16:55:50.644Z",
+  "milestones": [],
+  "paypalResponses": [
+    {
+      "operation": "create-order",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T16:55:50.644Z"
+    },
+    {
+      "operation": "authorize-order",
+      "status": "AUTHORIZED",
+      "recordedAt": "2026-11-12T16:55:50.644Z"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "6af8d78a-c927-4956-83f8-53b3e2c3b7f7",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-12T16:55:50.644Z"
+    }
+  ],
+  "orderId": "mock-order-c01-reject",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "mock-auth-c01-reject",
+  "authorizedAt": "2026-11-12T16:55:50.644Z",
+  "authorizationStatus": "VOIDED",
+  "authorizationResponseStatus": "AUTHORIZED",
+  "authorizationExpirationTime": "2026-12-11T16:55:50.644Z",
+  "authorizationAmount": "10.00",
+  "authorizationCurrency": "USD",
+  "voidedAt": "2026-11-12T16:56:17.058Z"
+}

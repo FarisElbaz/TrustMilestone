@@ -1,0 +1,15 @@
+{
+  "caseId": "c02-ui-20261112-182604",
+  "milestones": {},
+  "updatedAt": "2026-11-12T18:32:51.854Z",
+  "moneyChecks": {
+    "businessBalanceAfterRelease": {
+      "verified": true,
+      "httpStatus": 200,
+      "total": "4998.00",
+      "currency": "USD",
+      "available": "4998.00",
+      "capturedAt": "2026-11-12T18:32:51.853Z"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "caseId": "e2e-escalate-1794339792668",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-10T19:43:14.997Z",
+  "milestones": [],
+  "paypalResponses": [],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "c5415032-ccbd-4b1c-8e49-e252914f222c",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-10T19:43:14.997Z"
+    }
+  ],
+  "orderId": "8T548635UV999404E",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "95M96790D58851319",
+  "authorizationStatus": "CREATED",
+  "authorizationExpirationTime": "2026-12-09T19:43:17Z",
+  "authorizedAt": "2026-11-10T19:43:20.931Z"
+}

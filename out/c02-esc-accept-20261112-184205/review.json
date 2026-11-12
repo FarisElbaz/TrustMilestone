@@ -1,0 +1,129 @@
+{
+  "caseId": "c02-esc-accept-20261112-184205",
+  "submissionPath": "c:\\Users\\elbaz\\PayPalAI\\PayPalAI\\data\\submissions\\c02-esc-accept-20261112-184205",
+  "escalatedAt": "2026-11-12T18:47:16.769Z",
+  "criteria": [
+    {
+      "id": "C2",
+      "verdict": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "verdict": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C1",
+      "verdict": "pass",
+      "reason": "Criterion passed.",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "The project is configured with TypeScript (tsconfig.json), Express (package.json), and Node 22 (via @types/node in package.json, which is compatible with Node 20+ requirements).",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project is configured with TypeScript (tsconfig.json), Express (package.json), and Node 22 (via @types/node in package.json, which is compatible with Node 20+ requirements).",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project is configured with TypeScript (tsconfig.json), Express (package.json), and Node 22 (via @types/node in package.json, which is compatible with Node 20+ requirements).",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts",
+              "tests/app.test.ts"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    },
+    {
+      "id": "C4",
+      "verdict": "pass",
+      "reason": "Criterion passed.",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "The project includes Jest and supertest in package.json devDependencies, has a valid jest.config.js, and includes automated integration tests using Jest and supertest in tests/app.test.ts.",
+            "files": [
+              "package.json",
+              "jest.config.js",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project includes automated tests using Jest and supertest, with proper configuration files and test scripts setup.",
+            "files": [
+              "jest.config.js",
+              "package.json",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project includes automated tests using Jest and supertest, configured via jest.config.js, package.json, and implemented in tests/app.test.ts.",
+            "files": [
+              "jest.config.js",
+              "package.json",
+              "tests/app.test.ts"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    },
+    {
+      "id": "C5",
+      "verdict": "unclear",
+      "reason": "Manual review is required.",
+      "evidence": "manual review required"
+    }
+  ],
+  "authorizationId": "3AR45378JW827931A",
+  "expirationTime": "2026-12-11T18:42:57Z",
+  "status": "resolved",
+  "decision": "release",
+  "decidedAt": "2026-11-12T18:47:28.798Z",
+  "operator": "Demo Client",
+  "paypalIds": {
+    "authorizationId": "3AR45378JW827931A",
+    "captureId": "8H715439TJ099942N",
+    "payoutBatchId": "EFQNY2T6R5WRY"
+  }
+}

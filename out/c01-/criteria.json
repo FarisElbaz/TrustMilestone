@@ -1,0 +1,47 @@
+{
+  "caseId": "c01-",
+  "summary": "Create a Node 20 order placement service that accepts a product ID and quantity, calculates total price, returns a new order ID, and rejects negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project runtime environment is Node 20.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "The service accepts a request containing a product ID and a quantity.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "A successful order response includes a newly generated order ID.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C4",
+      "criterion": "The total price is calculated from the product price multiplied by the quantity.",
+      "method": "test",
+      "status": "ready",
+      "source": "calculate the total price from the product price"
+    },
+    {
+      "id": "C5",
+      "criterion": "A negative quantity is rejected with a bad-request response.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-12T16:25:10.932Z",
+  "approvedAt": "2026-11-12T16:25:20.777Z",
+  "approvedBy": "Natsuki Subaru"
+}

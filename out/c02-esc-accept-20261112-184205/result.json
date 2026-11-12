@@ -1,0 +1,143 @@
+{
+  "caseId": "c02-esc-accept-20261112-184205",
+  "submissionPath": "c:\\Users\\elbaz\\PayPalAI\\PayPalAI\\data\\submissions\\c02-esc-accept-20261112-184205",
+  "timestamp": "2026-11-12T18:46:30.176Z",
+  "models": {
+    "criteria_generator": "gemini-3.8-flash",
+    "code_review_judge": "gemini-3.8-flash"
+  },
+  "decision": "escalate",
+  "failingCriteria": [],
+  "evidence": [],
+  "outcomes": [
+    {
+      "id": "C2",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-1",
+        "manifestText": "Apply one valid discount code and return subtotal, discount, and total.",
+        "matchedTests": [
+          "applies a valid discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-1",
+        "manifestText": "Apply one valid discount code and return subtotal, discount, and total.",
+        "matchedTests": [
+          "applies a valid discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C1",
+      "method": "code_review",
+      "result": "pass",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "The project is configured with TypeScript (tsconfig.json), Express (package.json), and Node 22 (via @types/node in package.json, which is compatible with Node 20+ requirements).",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project is configured with TypeScript (tsconfig.json), Express (package.json), and Node 22 (via @types/node in package.json, which is compatible with Node 20+ requirements).",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project is configured with TypeScript (tsconfig.json), Express (package.json), and Node 22 (via @types/node in package.json, which is compatible with Node 20+ requirements).",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts",
+              "tests/app.test.ts"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    },
+    {
+      "id": "C4",
+      "method": "code_review",
+      "result": "pass",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "The project includes Jest and supertest in package.json devDependencies, has a valid jest.config.js, and includes automated integration tests using Jest and supertest in tests/app.test.ts.",
+            "files": [
+              "package.json",
+              "jest.config.js",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project includes automated tests using Jest and supertest, with proper configuration files and test scripts setup.",
+            "files": [
+              "jest.config.js",
+              "package.json",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project includes automated tests using Jest and supertest, configured via jest.config.js, package.json, and implemented in tests/app.test.ts.",
+            "files": [
+              "jest.config.js",
+              "package.json",
+              "tests/app.test.ts"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    },
+    {
+      "id": "C5",
+      "method": "manual",
+      "result": "unclear",
+      "evidence": "manual review required"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "caseId": "c02-esc-decline-20261112-184402",
+  "submissionPath": "c:\\Users\\elbaz\\PayPalAI\\PayPalAI\\data\\submissions\\c02-esc-decline-20261112-184402",
+  "timestamp": "2026-11-12T18:47:52.502Z",
+  "models": {
+    "criteria_generator": "gemini-3.8-flash",
+    "code_review_judge": "gemini-3.8-flash"
+  },
+  "decision": "escalate",
+  "failingCriteria": [],
+  "evidence": [],
+  "outcomes": [
+    {
+      "id": "C1",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-1",
+        "manifestText": "Apply one valid discount code and return subtotal, discount, and total.",
+        "matchedTests": [
+          "applies a valid discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-1",
+        "manifestText": "Apply one valid discount code and return subtotal, discount, and total.",
+        "matchedTests": [
+          "applies a valid discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-1",
+        "manifestText": "Apply one valid discount code and return subtotal, discount, and total.",
+        "matchedTests": [
+          "applies a valid discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C4",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: rejects an unknown discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-2",
+        "manifestText": "Reject an unknown discount code with HTTP 400.",
+        "matchedTests": [
+          "rejects an unknown discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "rejects an unknown discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-2"
+        }
+      ]
+    },
+    {
+      "id": "C5",
+      "method": "manual",
+      "result": "unclear",
+      "evidence": "manual review required"
+    }
+  ]
+}

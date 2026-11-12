@@ -1,0 +1,52 @@
+{
+  "caseId": "live-test",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-10T13:48:20.224Z",
+  "milestones": [
+    {
+      "number": 1,
+      "amount": "10.00",
+      "status": "released_unverified",
+      "timestamp": "2026-11-10T13:48:26.017Z",
+      "captureId": "66M52102WS548060T",
+      "invoiceId": "milestone-66e01c54-a678-4fa7-bdb0-69beff405836",
+      "captureStatus": "COMPLETED",
+      "payoutBatchId": "4BN4ENPV4YP7L",
+      "payoutStatus": "PENDING"
+    }
+  ],
+  "paypalResponses": [
+    {
+      "operation": "capture",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-10T13:48:28.184Z"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "f5748512-879d-44f9-8fb0-a754ff4bf994",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-10T13:48:24.286Z"
+    },
+    {
+      "operation": "capture",
+      "requestId": "37529103-a3eb-49e7-afbb-31a9d48a54e4",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-10T13:48:28.183Z"
+    },
+    {
+      "operation": "payout",
+      "requestId": "1803d983-eaa8-4cf5-8fc4-8c62c8916123",
+      "status": "PENDING",
+      "recordedAt": "2026-11-10T13:48:28.654Z"
+    }
+  ],
+  "orderId": "1W016371NB4880924",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "6EK230941K932903A",
+  "authorizationStatus": "CREATED",
+  "authorizationExpirationTime": "2026-12-09T13:48:23Z",
+  "authorizedAt": "2026-11-10T13:48:25.657Z"
+}

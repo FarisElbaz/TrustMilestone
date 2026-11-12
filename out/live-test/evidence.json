@@ -1,0 +1,165 @@
+{
+  "caseId": "live-test",
+  "milestones": {
+    "1": {
+      "beforeBusiness": {
+        "capturedAt": "2026-11-10T13:48:26.014Z",
+        "currency": "USD",
+        "available": "5000.00",
+        "total": "5000.00",
+        "raw": {
+          "balances": [
+            {
+              "currency": "USD",
+              "total_balance": {
+                "currency_code": "USD",
+                "value": "5000.00"
+              },
+              "available_balance": {
+                "currency_code": "USD",
+                "value": "5000.00"
+              },
+              "withheld_balance": {
+                "currency_code": "USD",
+                "value": "0.00"
+              }
+            }
+          ],
+          "account_id": "PSDM2NWPQJEKA",
+          "as_of_time": "2026-11-10T07:59:59Z",
+          "last_refresh_time": "2026-11-10T07:59:59Z"
+        }
+      },
+      "afterCaptureBusiness": {
+        "capturedAt": "2026-11-10T13:48:29.559Z",
+        "currency": "USD",
+        "available": "5000.00",
+        "total": "5000.00",
+        "raw": {
+          "balances": [
+            {
+              "currency": "USD",
+              "total_balance": {
+                "currency_code": "USD",
+                "value": "5000.00"
+              },
+              "available_balance": {
+                "currency_code": "USD",
+                "value": "5000.00"
+              },
+              "withheld_balance": {
+                "currency_code": "USD",
+                "value": "0.00"
+              }
+            }
+          ],
+          "account_id": "PSDM2NWPQJEKA",
+          "as_of_time": "2026-11-10T07:59:59Z",
+          "last_refresh_time": "2026-11-10T07:59:59Z"
+        }
+      },
+      "captureTransactions": [],
+      "checks": {
+        "captureCompleted": true,
+        "captureBalance": false
+      }
+    }
+  },
+  "updatedAt": "2026-11-10T13:48:30.193Z",
+  "steps": [
+    {
+      "step": "create-order",
+      "paypalId": "1W016371NB4880924",
+      "status": "COMPLETED",
+      "httpStatus": 201
+    },
+    {
+      "step": "fetch-order",
+      "paypalId": "1W016371NB4880924",
+      "status": "COMPLETED",
+      "httpStatus": 200
+    },
+    {
+      "step": "authorize-order",
+      "paypalId": "6EK230941K932903A",
+      "status": "CREATED",
+      "httpStatus": 200
+    },
+    {
+      "step": "before-business-balance",
+      "paypalId": "6EK230941K932903A",
+      "status": "READ",
+      "httpStatus": 200,
+      "balance": {
+        "capturedAt": "2026-11-10T13:48:26.014Z",
+        "currency": "USD",
+        "available": "5000.00",
+        "total": "5000.00",
+        "raw": {
+          "balances": [
+            {
+              "currency": "USD",
+              "total_balance": {
+                "currency_code": "USD",
+                "value": "5000.00"
+              },
+              "available_balance": {
+                "currency_code": "USD",
+                "value": "5000.00"
+              },
+              "withheld_balance": {
+                "currency_code": "USD",
+                "value": "0.00"
+              }
+            }
+          ],
+          "account_id": "PSDM2NWPQJEKA",
+          "as_of_time": "2026-11-10T07:59:59Z",
+          "last_refresh_time": "2026-11-10T07:59:59Z"
+        }
+      }
+    },
+    {
+      "step": "capture-and-after-capture-balance",
+      "paypalId": "66M52102WS548060T",
+      "status": "COMPLETED",
+      "httpStatus": 201,
+      "balance": {
+        "capturedAt": "2026-11-10T13:48:29.559Z",
+        "currency": "USD",
+        "available": "5000.00",
+        "total": "5000.00",
+        "raw": {
+          "balances": [
+            {
+              "currency": "USD",
+              "total_balance": {
+                "currency_code": "USD",
+                "value": "5000.00"
+              },
+              "available_balance": {
+                "currency_code": "USD",
+                "value": "5000.00"
+              },
+              "withheld_balance": {
+                "currency_code": "USD",
+                "value": "0.00"
+              }
+            }
+          ],
+          "account_id": "PSDM2NWPQJEKA",
+          "as_of_time": "2026-11-10T07:59:59Z",
+          "last_refresh_time": "2026-11-10T07:59:59Z"
+        }
+      }
+    },
+    {
+      "step": "payout-submission",
+      "paypalId": "4BN4ENPV4YP7L",
+      "status": "PENDING",
+      "httpStatus": 201,
+      "error": "Payout was submitted by the existing release flow before the capture-balance check failed; final payout status was not polled."
+    }
+  ],
+  "reportingErrors": []
+}

@@ -1,0 +1,1 @@
+I need a product list that can be narrowed by category. I also need to request a particular page and choose how many products appear on each page. Please include the matching total and the page details with the products.

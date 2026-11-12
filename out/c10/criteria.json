@@ -1,0 +1,36 @@
+{
+  "caseId": "c10",
+  "summary": "Build a calculator web application that supports addition and subtraction with blue and green gradients where blue is the main gradient.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The calculator web application performs addition operations correctly.",
+      "method": "test",
+      "status": "ready",
+      "source": "only does addition and subtraction"
+    },
+    {
+      "id": "C2",
+      "criterion": "The calculator web application performs subtraction operations correctly.",
+      "method": "test",
+      "status": "ready",
+      "source": "only does addition and subtraction"
+    },
+    {
+      "id": "C3",
+      "criterion": "The application features blue and green gradients, with blue acting as the main gradient.",
+      "method": "manual",
+      "status": "ready",
+      "source": "has blue and green gradients and Blue should be the main gradient"
+    }
+  ],
+  "open_questions": [],
+  "out_of_scope": [
+    "Multiplication operations",
+    "Division operations"
+  ],
+  "status": "approved",
+  "proposedAt": "2026-11-04T13:31:25.330Z",
+  "approvedAt": "2026-11-04T13:34:20.110Z",
+  "approvedBy": "unknown"
+}

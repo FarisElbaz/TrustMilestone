@@ -1,0 +1,133 @@
+{
+  "caseId": "c01",
+  "submissionPath": "c:\\Users\\elbaz\\PayPalAI\\PayPalAI\\testset\\cases\\c01\\variants\\V2_subtle_bug",
+  "timestamp": "2026-11-12T16:55:50.642Z",
+  "models": {
+    "criteria_generator": "gemini-3.5-flash-lite",
+    "code_review_judge": "gemini-3.5-flash-lite"
+  },
+  "decision": "reject",
+  "failingCriteria": [
+    {
+      "id": "C3",
+      "method": "code_review",
+      "result": "fail",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "fail",
+            "reason": "The quantity boundary is implemented in the source.",
+            "files": [
+              "src/app.ts"
+            ]
+          },
+          {
+            "verdict": "fail",
+            "reason": "The quantity boundary is implemented in the source.",
+            "files": [
+              "src/app.ts"
+            ]
+          },
+          {
+            "verdict": "fail",
+            "reason": "The quantity boundary is implemented in the source.",
+            "files": [
+              "src/app.ts"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "fail"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "verdicts": [
+        {
+          "verdict": "fail",
+          "reason": "The quantity boundary is implemented in the source.",
+          "files": [
+            "src/app.ts"
+          ]
+        },
+        {
+          "verdict": "fail",
+          "reason": "The quantity boundary is implemented in the source.",
+          "files": [
+            "src/app.ts"
+          ]
+        },
+        {
+          "verdict": "fail",
+          "reason": "The quantity boundary is implemented in the source.",
+          "files": [
+            "src/app.ts"
+          ]
+        }
+      ],
+      "combined": "decided",
+      "result": "fail"
+    }
+  ],
+  "outcomes": [
+    {
+      "id": "C1",
+      "method": "test",
+      "result": "pass",
+      "evidence": [
+        {
+          "name": "creates an order with its total",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "method": "test",
+      "result": "pass",
+      "evidence": [
+        {
+          "name": "rejects a negative quantity",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-2"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "method": "code_review",
+      "result": "fail",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "fail",
+            "reason": "The quantity boundary is implemented in the source.",
+            "files": [
+              "src/app.ts"
+            ]
+          },
+          {
+            "verdict": "fail",
+            "reason": "The quantity boundary is implemented in the source.",
+            "files": [
+              "src/app.ts"
+            ]
+          },
+          {
+            "verdict": "fail",
+            "reason": "The quantity boundary is implemented in the source.",
+            "files": [
+              "src/app.ts"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "fail"
+      }
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "caseId": "c02-verify-20261112-181508",
+  "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\testset\\cases\\c02\\reference",
+  "timestamp": "2026-11-12T18:15:12.527Z",
+  "models": {
+    "criteria_generator": "gemini-3.8-flash",
+    "code_review_judge": "gemini-3.8-flash"
+  },
+  "decision": "release",
+  "failingCriteria": [],
+  "evidence": [],
+  "outcomes": [
+    {
+      "id": "C2",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-1",
+        "manifestText": "Apply one valid discount code and return subtotal, discount, and total.",
+        "matchedTests": [
+          "applies a valid discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: rejects an unknown discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-2",
+        "manifestText": "Reject an unknown discount code with HTTP 400.",
+        "matchedTests": [
+          "rejects an unknown discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "rejects an unknown discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-2"
+        }
+      ]
+    },
+    {
+      "id": "C4",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-1",
+        "manifestText": "Apply one valid discount code and return subtotal, discount, and total.",
+        "matchedTests": [
+          "applies a valid discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C5",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-1",
+        "manifestText": "Apply one valid discount code and return subtotal, discount, and total.",
+        "matchedTests": [
+          "applies a valid discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C1",
+      "method": "code_review",
+      "result": "pass",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "The application is implemented in TypeScript (src/app.ts, tsconfig.json) using Express ('express' dependency) and configured to run in a Node environment.",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project is configured with TypeScript (tsconfig.json), Express (package.json), and Node 22 (via @types/node in package.json, which is compatible with Node 20+ requirements).",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project is configured with TypeScript (tsconfig.json), Express (package.json), and Node 22 (via @types/node in package.json, which is compatible with Node 20+ requirements).",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts",
+              "tests/app.test.ts"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    }
+  ]
+}

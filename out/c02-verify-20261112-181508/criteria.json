@@ -1,0 +1,65 @@
+{
+  "caseId": "c02-verify-20261112-181508",
+  "summary": "Implement a discount code validation and calculation endpoint for product orders.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The application must be built using Node 20, Express, and TypeScript.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "STACK AND CONSTRAINTS"
+    },
+    {
+      "id": "C2",
+      "criterion": "The API must return a JSON response containing 'originalAmount', 'savings', and 'finalAmount' when a valid discount code is applied.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "I want to see the original amount, savings, and final amount."
+    },
+    {
+      "id": "C3",
+      "criterion": "The API must return an HTTP 400 or 404 status code when an unknown discount code is provided.",
+      "method": "test",
+      "status": "ready",
+      "source": "An unknown code should be refused."
+    },
+    {
+      "id": "C4",
+      "criterion": "The solution must include automated tests using Jest and supertest.",
+      "method": "test",
+      "status": "ready",
+      "source": "STACK AND CONSTRAINTS"
+    },
+    {
+      "id": "C5",
+      "criterion": "The final amount must equal the original amount minus the savings.",
+      "method": "test",
+      "status": "ready",
+      "source": "The price should be reduced by the valid code I provide"
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What is the source of truth for valid discount codes and their associated discount values?",
+      "affects": [
+        "C2",
+        "C3"
+      ]
+    },
+    {
+      "question": "What is the expected HTTP status code for a successful discount application?",
+      "affects": [
+        "C2"
+      ]
+    }
+  ],
+  "out_of_scope": [
+    "Database implementation for storing discount codes",
+    "User authentication",
+    "Frontend UI implementation"
+  ],
+  "status": "approved",
+  "proposedAt": "2026-11-12T18:15:12.521Z",
+  "approvedAt": "2026-11-12T18:15:12.523Z",
+  "approvedBy": "unknown"
+}

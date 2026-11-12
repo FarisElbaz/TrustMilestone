@@ -1,0 +1,1 @@
+Please let me cancel an order when it is still pending. Orders that have already shipped or been cancelled must not be changed. If I refer to an order that does not exist, tell me it was not found.

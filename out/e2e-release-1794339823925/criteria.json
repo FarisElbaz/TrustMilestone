@@ -1,0 +1,56 @@
+{
+  "caseId": "e2e-release-1794339823925",
+  "summary": "Build a Node 20 Express TypeScript service that creates a product order with a calculated total price, validating against negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The application runs on Node 20 using Express and TypeScript, and includes Jest and supertest for testing.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "Accepts an order request containing a product ID and a quantity.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "Returns a new unique order ID upon successful order placement.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C4",
+      "criterion": "Calculates the total price of the order based on the product price.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "Returns a bad-request response when a negative quantity is provided.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "Where should product prices be retrieved from (e.g., hardcoded, database, or external service), and what is the exact JSON structure and HTTP status code expected for success and bad-request responses?",
+      "affects": [
+        "C3",
+        "C4",
+        "C5"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:43:50.181Z",
+  "approvedAt": "2026-11-10T19:43:50.195Z",
+  "approvedBy": "E2E client"
+}

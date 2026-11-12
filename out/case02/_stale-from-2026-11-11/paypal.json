@@ -1,0 +1,25 @@
+{
+  "caseId": "case02",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-11T14:14:51.479Z",
+  "milestones": [],
+  "paypalResponses": [
+    {
+      "operation": "create-order",
+      "status": "CREATED",
+      "recordedAt": "2026-11-11T14:14:52.741Z"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "4964a3df-f46d-4881-b934-8d2f21d4897e",
+      "status": "CREATED",
+      "recordedAt": "2026-11-11T14:14:52.741Z"
+    }
+  ],
+  "orderId": "4NJ860203K6919531",
+  "approvalUrl": "https://www.sandbox.paypal.com/checkoutnow?token=4NJ860203K6919531",
+  "orderStatus": "CREATED"
+}

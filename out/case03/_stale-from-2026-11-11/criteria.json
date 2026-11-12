@@ -1,0 +1,45 @@
+{
+  "caseId": "case03",
+  "summary": "A simple calculator application supporting addition and subtraction.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The calculator application performs addition.",
+      "method": "test",
+      "status": "ready",
+      "source": "addition and subtraction"
+    },
+    {
+      "id": "C2",
+      "criterion": "The calculator application performs subtraction.",
+      "method": "test",
+      "status": "ready",
+      "source": "addition and subtraction"
+    },
+    {
+      "id": "C3",
+      "criterion": "The calculator application only includes addition and subtraction operations.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "only addition and subtraction"
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What user interface format or input/output mechanism (CLI, Web UI, API, GUI library) should the calculator use?",
+      "affects": [
+        "C1",
+        "C2"
+      ]
+    }
+  ],
+  "out_of_scope": [
+    "Multiplication",
+    "Division",
+    "Advanced mathematical operations"
+  ],
+  "status": "approved",
+  "proposedAt": "2026-11-11T14:27:27.318Z",
+  "approvedAt": "2026-11-11T14:27:34.944Z",
+  "approvedBy": "Release Test Client"
+}

@@ -1,0 +1,3 @@
+import express from "express"; const app=express();
+const products=[{id:"p1",name:"Apple",category:"food"},{id:"p2",name:"Apron",category:"home"},{id:"p3",name:"Book",category:"media"},{id:"p4",name:"Berry",category:"food"}];
+app.get("/products",(req,res)=>{let out=products.slice();  const page=Math.max(1,Number(req.query.page)||1), limit=Math.max(1,Number(req.query.limit)||2); const start=(page-1)*limit; return res.json({items:out.slice(start,start+limit),page,limit,total:out.length});}); export default app;

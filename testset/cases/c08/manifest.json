@@ -1,0 +1,56 @@
+{
+  "case": "c08",
+  "stack": "Node 20, Express, TypeScript, Jest, supertest",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add a product quantity to a known cart."
+    },
+    {
+      "id": "REQ-2",
+      "text": "Merge duplicate products by increasing their existing quantity."
+    },
+    {
+      "id": "REQ-3",
+      "text": "Reject non-positive or non-integer quantities and unknown carts."
+    }
+  ],
+  "variants": [
+    {
+      "id": "V1_correct",
+      "change_description": "A different correct implementation of the same requirements.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    },
+    {
+      "id": "V2_subtle_bug",
+      "change_description": "Replaces duplicate quantities instead of adding them.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "merges a duplicate product"
+      ],
+      "requirements_affected": [
+        "REQ-2"
+      ]
+    },
+    {
+      "id": "V3_missing_feature",
+      "change_description": "Removes item quantity validation.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "rejects invalid quantity"
+      ],
+      "requirements_affected": [
+        "REQ-3"
+      ]
+    },
+    {
+      "id": "V4_ambiguous",
+      "change_description": "Adds an unrequested cart retrieval endpoint.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    }
+  ]
+}

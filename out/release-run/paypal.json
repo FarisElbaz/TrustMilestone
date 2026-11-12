@@ -1,0 +1,68 @@
+{
+  "caseId": "release-run",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-10T19:43:50.203Z",
+  "milestones": [
+    {
+      "number": 1,
+      "amount": "10.00",
+      "status": "released_unverified",
+      "timestamp": "2026-11-11T12:57:04.393Z",
+      "captureId": "2DN98015P3235063B",
+      "invoiceId": "milestone-0dce7807-41b2-4fc6-9dbc-d09264368087",
+      "captureStatus": "COMPLETED",
+      "payoutBatchId": "7WGSM54P5XMVQ",
+      "payoutStatus": "SUCCESS",
+      "payoutItemStatuses": [
+        "SUCCESS"
+      ]
+    }
+  ],
+  "paypalResponses": [
+    {
+      "operation": "capture",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-11T12:57:08.249Z"
+    },
+    {
+      "operation": "payout-status",
+      "status": "SUCCESS",
+      "recordedAt": "2026-11-11T14:12:06.255Z"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "a2d5b504-f829-4318-9842-c74be02a139f",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-10T19:43:50.203Z"
+    },
+    {
+      "operation": "capture",
+      "requestId": "6f23f249-b083-408d-b0bd-743b55d76e37",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-11T12:57:08.247Z"
+    },
+    {
+      "operation": "payout",
+      "requestId": "b470cb63-d596-4830-b133-55a028fe733a",
+      "status": "PENDING",
+      "recordedAt": "2026-11-11T12:57:08.848Z"
+    }
+  ],
+  "orderId": "3M243382BJ255145A",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "98A64427EH883704U",
+  "authorizationStatus": "CREATED",
+  "authorizationExpirationTime": "2026-12-09T19:43:52Z",
+  "authorizedAt": "2026-11-10T19:43:59.290Z",
+  "escalation": {
+    "deadline": "2026-11-11T19:44:10.020Z",
+    "recordedAt": "2026-11-10T19:44:10.021Z"
+  },
+  "hold": {
+    "deadline": "2026-11-11T19:44:10.020Z",
+    "recordedAt": "2026-11-10T19:44:10.021Z"
+  }
+}

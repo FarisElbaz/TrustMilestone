@@ -1,0 +1,2 @@
+import express from "express"; const app=express(); app.use(express.json()); const products:Record<string,number>={p1:5,p2:0};
+app.patch("/products/:id/stock",(req,res)=>{const {stock}=req.body||{};  products[req.params.id]=stock; return res.json({id:req.params.id,stock});}); export default app;

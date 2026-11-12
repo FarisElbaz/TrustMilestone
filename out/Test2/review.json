@@ -1,0 +1,63 @@
+{
+  "caseId": "Test2",
+  "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\data\\submissions\\Test2",
+  "escalatedAt": "2026-11-12T17:23:34.860Z",
+  "criteria": [
+    {
+      "id": "C2",
+      "verdict": "unclear",
+      "reason": "The automated evaluation was inconclusive.",
+      "evidence": []
+    },
+    {
+      "id": "C3",
+      "verdict": "unclear",
+      "reason": "The automated evaluation was inconclusive.",
+      "evidence": []
+    },
+    {
+      "id": "C4",
+      "verdict": "unclear",
+      "reason": "The automated evaluation was inconclusive.",
+      "evidence": []
+    },
+    {
+      "id": "C1",
+      "verdict": "pass",
+      "reason": "Criterion passed.",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "The application specifies Node version compatibility in dependencies and devDependencies such as @types/node 22.x and ts-jest supporting Node 20+, and compiles under Node 20 targets.",
+            "files": [
+              "V1_correct\\package.json",
+              "V1_correct\\tsconfig.json"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The application files, package.json, and package-lock.json indicate compatibility with Node 20 (specifically @types/node >=22 and ts-jest supporting Node 20+).",
+            "files": [
+              "V1_correct\\package.json",
+              "V1_correct\\package-lock.json"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The application package.json and package-lock.json indicate compatibility with Node 22 (and thus Node 20+), and ts-jest/typescript settings support modern Node environments.",
+            "files": [
+              "V1_correct\\package.json",
+              "V1_correct\\package-lock.json"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    }
+  ],
+  "authorizationId": "0XY58646B8945943Y",
+  "expirationTime": "2026-12-11T17:18:04Z",
+  "status": "pending"
+}

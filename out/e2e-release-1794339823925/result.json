@@ -1,0 +1,71 @@
+{
+  "caseId": "e2e-release-1794339823925",
+  "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\data\\submissions\\e2e-release-1794339823925",
+  "timestamp": "2026-11-10T19:43:59.792Z",
+  "models": {
+    "criteria_generator": "gemini-3.5-flash-lite",
+    "code_review_judge": "gemini-3.5-flash-lite"
+  },
+  "decision": "escalate",
+  "failingCriteria": [],
+  "evidence": [],
+  "outcomes": [
+    {
+      "id": "C2",
+      "method": "test",
+      "result": "pass",
+      "evidence": [
+        {
+          "name": "rejects a negative quantity",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-2"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "method": "test",
+      "result": "unclear",
+      "evidence": []
+    },
+    {
+      "id": "C4",
+      "method": "test",
+      "result": "unclear",
+      "evidence": []
+    },
+    {
+      "id": "C5",
+      "method": "test",
+      "result": "unclear",
+      "evidence": []
+    },
+    {
+      "id": "C1",
+      "method": "code_review",
+      "result": "pass",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "E2E judge result",
+            "files": []
+          },
+          {
+            "verdict": "pass",
+            "reason": "E2E judge result",
+            "files": []
+          },
+          {
+            "verdict": "pass",
+            "reason": "E2E judge result",
+            "files": []
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    }
+  ]
+}

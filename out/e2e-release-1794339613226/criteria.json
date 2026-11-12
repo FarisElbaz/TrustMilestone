@@ -1,0 +1,68 @@
+{
+  "caseId": "e2e-release-1794339613226",
+  "summary": "Build a Node 20, Express, TypeScript service that places an order given a product ID and quantity, returns a new order ID, calculates the total price, and rejects negative quantities with a bad request response.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project uses Node 20 runtime environment.",
+      "method": "test",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "The project uses Express as the web framework.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C3",
+      "criterion": "The project is written in TypeScript.",
+      "method": "test",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C4",
+      "criterion": "The project uses Jest and supertest for testing.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C5",
+      "criterion": "Accepts a product ID and quantity to place an order.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C6",
+      "criterion": "Provides a new order ID in the response upon successful order placement.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C7",
+      "criterion": "Calculates the total price from the product price upon successful order placement.",
+      "method": "test",
+      "status": "ready",
+      "source": "calculate the total price from the product price."
+    },
+    {
+      "id": "C8",
+      "criterion": "Returns a bad-request response when a negative quantity is provided.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:40:15.392Z",
+  "approvedAt": "2026-11-10T19:40:15.405Z",
+  "approvedBy": "E2E client"
+}

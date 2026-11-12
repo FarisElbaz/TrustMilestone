@@ -1,0 +1,38 @@
+{
+  "caseId": "c09",
+  "summary": "A basic website utilizing blue and green gradients to display data.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The codebase and runtime environment are configured for Node 20.",
+      "method": "test",
+      "status": "ready",
+      "source": "Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "The website includes blue and green gradients.",
+      "method": "manual",
+      "status": "ready",
+      "source": "A basic website that has blue and green gradients"
+    },
+    {
+      "id": "C3",
+      "criterion": "The website displays data.",
+      "method": "manual",
+      "status": "needs_clarification",
+      "source": "to display data"
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What specific data should the website display and what is the data source?",
+      "affects": [
+        "C3"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "proposed",
+  "proposedAt": "2026-11-04T13:30:03.473Z"
+}

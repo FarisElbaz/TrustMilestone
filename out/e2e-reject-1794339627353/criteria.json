@@ -1,0 +1,54 @@
+{
+  "caseId": "e2e-reject-1794339627353",
+  "summary": "Create an Express and TypeScript service that places a product order, calculates the total price, generates an order ID, and rejects negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project runs on Node 20 and uses TypeScript, Express, Jest, and supertest.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "The service accepts an order request containing a product ID and a quantity.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "The service response includes a newly generated order ID.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C4",
+      "criterion": "The service calculates the total price based on the product price and the requested quantity.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "A negative quantity returns a bad-request response with a clear error message.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "How are product prices retrieved or stored (e.g., in-memory database, external API, hardcoded list)?",
+      "affects": [
+        "C4"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:40:29.884Z",
+  "approvedAt": "2026-11-10T19:40:29.897Z",
+  "approvedBy": "E2E client"
+}

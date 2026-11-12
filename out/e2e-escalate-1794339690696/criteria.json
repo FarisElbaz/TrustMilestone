@@ -1,0 +1,54 @@
+{
+  "caseId": "e2e-escalate-1794339690696",
+  "summary": "Build a Node 20 Express TypeScript service that creates a product order with an ID and quantity, returns a new order ID, calculates total price, and rejects negative quantities with a bad-request response.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project runs on Node 20.",
+      "method": "test",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "The codebase is written in TypeScript and uses Express.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C3",
+      "criterion": "Automated testing is implemented using Jest and supertest.",
+      "method": "test",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C4",
+      "criterion": "Accepting a product ID and quantity successfully creates an order and returns a new order ID and the calculated total price based on the product price.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want. The service should provide a new order ID and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "A negative quantity is rejected with a bad-request response (HTTP 400).",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What is the specific API endpoint path, HTTP method, request body schema, and product data source used to retrieve the product price?",
+      "affects": [
+        "C4"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:41:33.433Z",
+  "approvedAt": "2026-11-10T19:41:33.446Z",
+  "approvedBy": "E2E client"
+}

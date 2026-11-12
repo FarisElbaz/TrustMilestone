@@ -1,0 +1,52 @@
+{
+  "case": "c04",
+  "stack": "Node 20, Express, TypeScript, Jest, supertest",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Filter products by category."
+    },
+    {
+      "id": "REQ-2",
+      "text": "Paginate products with page and limit and return page metadata."
+    }
+  ],
+  "variants": [
+    {
+      "id": "V1_correct",
+      "change_description": "A different correct implementation of the same requirements.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    },
+    {
+      "id": "V2_subtle_bug",
+      "change_description": "Starts each page one full page too late.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "paginates products"
+      ],
+      "requirements_affected": [
+        "REQ-2"
+      ]
+    },
+    {
+      "id": "V3_missing_feature",
+      "change_description": "Removes category filtering from the product list.",
+      "expected_verdict": "fail",
+      "expected_failing_tests": [
+        "filters products by category"
+      ],
+      "requirements_affected": [
+        "REQ-1"
+      ]
+    },
+    {
+      "id": "V4_ambiguous",
+      "change_description": "Adds an unrequested single-product endpoint.",
+      "expected_verdict": "pass",
+      "expected_failing_tests": [],
+      "requirements_affected": []
+    }
+  ]
+}

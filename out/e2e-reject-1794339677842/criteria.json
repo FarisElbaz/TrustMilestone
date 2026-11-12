@@ -1,0 +1,47 @@
+{
+  "caseId": "e2e-reject-1794339677842",
+  "summary": "Create an Express API endpoint in TypeScript on Node 20 that accepts a product ID and quantity to place an order, calculating total price and returning a new order ID or rejecting negative quantities with a bad request response.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project uses Node 20, Express, TypeScript, Jest, and supertest.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "A POST request to place an order with a product ID and a positive quantity returns a new order ID and a calculated total price based on the product price.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want. The service should provide a new order ID and calculate the total price from the product price."
+    },
+    {
+      "id": "C3",
+      "criterion": "A request with a negative quantity is rejected with a bad-request HTTP response status code and a clear error message.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    },
+    {
+      "id": "C4",
+      "criterion": "Automated tests covering the order placement functionality are implemented using Jest and supertest.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Jest, supertest"
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "Where do product prices come from (e.g., an in-memory database, an external service, or a static list), and what are the exact request and response payload structures?",
+      "affects": [
+        "C2"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:41:24.315Z",
+  "approvedAt": "2026-11-10T19:41:24.327Z",
+  "approvedBy": "E2E client"
+}

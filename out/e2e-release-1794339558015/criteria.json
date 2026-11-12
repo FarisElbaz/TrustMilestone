@@ -1,0 +1,69 @@
+{
+  "caseId": "e2e-release-1794339558015",
+  "summary": "Create a Node.js Express service in TypeScript that processes product orders, calculates total prices, and handles negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project is written using Node 20, Express, and TypeScript, with Jest and supertest available for testing.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "Accepts an order request containing a product ID and a quantity.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "Returns a response containing a new order ID upon successful order placement.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C4",
+      "criterion": "Calculates the total price of the order based on the product price.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "Returns a bad-request response when a negative quantity is provided.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "What are the exact HTTP method, route path, and JSON payload structure for placing an order?",
+      "affects": [
+        "C2",
+        "C3",
+        "C4",
+        "C5"
+      ]
+    },
+    {
+      "question": "How are product prices retrieved (e.g., in-memory database, external mock, hardcoded list)?",
+      "affects": [
+        "C4"
+      ]
+    },
+    {
+      "question": "What is the expected format and content of the clear bad-request response?",
+      "affects": [
+        "C5"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:39:27.388Z",
+  "approvedAt": "2026-11-10T19:39:27.414Z",
+  "approvedBy": "E2E client"
+}

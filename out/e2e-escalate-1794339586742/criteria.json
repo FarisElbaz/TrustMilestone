@@ -1,0 +1,54 @@
+{
+  "caseId": "e2e-escalate-1794339586742",
+  "summary": "Build a Node 20, Express, TypeScript, and Jest application that processes product orders by calculating totals from product prices and rejecting negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project runs on Node 20.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "The application is built using Express and TypeScript.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C3",
+      "criterion": "Automated tests are written and run using Jest and supertest.",
+      "method": "test",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C4",
+      "criterion": "Placing an order with a product ID and a valid quantity returns a new order ID and a calculated total price based on the product price.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want. The service should provide a new order ID and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "A negative quantity is rejected with a bad-request response.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "Where do product prices come from (e.g., an in-memory store, database, or external API), and what is the exact endpoint path and payload structure for placing an order?",
+      "affects": [
+        "C4"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:39:49.508Z",
+  "approvedAt": "2026-11-10T19:39:49.519Z",
+  "approvedBy": "E2E client"
+}

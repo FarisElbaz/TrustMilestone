@@ -1,0 +1,43 @@
+{
+  "caseId": "case02",
+  "summary": "A simple calculator app supporting only addition and subtraction.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project runs on Node 20.",
+      "method": "test",
+      "status": "ready",
+      "source": "Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "The application implements addition.",
+      "method": "test",
+      "status": "ready",
+      "source": "A simple calculator app that only has addition"
+    },
+    {
+      "id": "C3",
+      "criterion": "The application implements subtraction.",
+      "method": "test",
+      "status": "ready",
+      "source": "and subtraction nothing else."
+    },
+    {
+      "id": "C4",
+      "criterion": "The application does not include operations other than addition and subtraction.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "nothing else."
+    }
+  ],
+  "open_questions": [],
+  "out_of_scope": [
+    "Multiplication and division operations",
+    "User interface requirements"
+  ],
+  "status": "approved",
+  "proposedAt": "2026-11-11T14:14:06.797Z",
+  "approvedAt": "2026-11-11T14:14:40.002Z",
+  "approvedBy": "Release Test Client"
+}

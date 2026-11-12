@@ -1,0 +1,54 @@
+{
+  "caseId": "e2e-escalate-1794339853458",
+  "summary": "Build a Node 20, Express, TypeScript, Jest, and supertest service to place an order by product ID and quantity, returning a new order ID and total price, and rejecting negative quantities with a bad-request response.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project runs on Node 20 and uses TypeScript, Express, Jest, and supertest.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "The service accepts a product ID and a quantity to place an order.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "The service provides a new order ID upon successfully placing an order.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C4",
+      "criterion": "The service calculates the total price from the product price based on the given quantity.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "A negative quantity is rejected with a clear bad-request response (HTTP 400).",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "Where do product IDs and product prices come from? Is there an existing database, a mock data source, or an expected request payload structure for product details?",
+      "affects": [
+        "C4"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:44:19.088Z",
+  "approvedAt": "2026-11-10T19:44:19.103Z",
+  "approvedBy": "E2E client"
+}

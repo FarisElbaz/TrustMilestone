@@ -1,0 +1,54 @@
+{
+  "caseId": "e2e-release-1794339659235",
+  "summary": "Build a Node 20, Express, TypeScript, and Jest-based service to place an order by product ID and quantity, generating an order ID and calculating the total price while rejecting negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The application runs on Node 20.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20"
+    },
+    {
+      "id": "C2",
+      "criterion": "The project uses Express and TypeScript.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Express, TypeScript"
+    },
+    {
+      "id": "C3",
+      "criterion": "Automated tests are written using Jest and supertest.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Jest, supertest"
+    },
+    {
+      "id": "C4",
+      "criterion": "The service accepts a product ID and a quantity to place an order.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C5",
+      "criterion": "The response provides a new order ID and the calculated total price based on the product price.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID and calculate the total price from the product price."
+    },
+    {
+      "id": "C6",
+      "criterion": "A negative quantity returns a bad-request response.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:41:06.411Z",
+  "approvedAt": "2026-11-10T19:41:06.428Z",
+  "approvedBy": "E2E client"
+}

@@ -1,0 +1,155 @@
+{
+  "caseId": "c02-ui-20261112-182604",
+  "submissionPath": "c:\\Users\\elbaz\\PayPalAI\\PayPalAI\\data\\submissions\\c02-ui-20261112-182604",
+  "timestamp": "2026-11-12T18:26:28.805Z",
+  "models": {
+    "criteria_generator": "gemini-3.8-flash",
+    "code_review_judge": "gemini-3.8-flash"
+  },
+  "decision": "release",
+  "failingCriteria": [],
+  "evidence": [],
+  "outcomes": [
+    {
+      "id": "C2",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-1",
+        "manifestText": "Apply one valid discount code and return subtotal, discount, and total.",
+        "matchedTests": [
+          "applies a valid discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: rejects an unknown discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-2",
+        "manifestText": "Reject an unknown discount code with HTTP 400.",
+        "matchedTests": [
+          "rejects an unknown discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "rejects an unknown discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-2"
+        }
+      ]
+    },
+    {
+      "id": "C5",
+      "method": "test",
+      "result": "pass",
+      "reason": "All matching tests passed: applies a valid discount code",
+      "match": {
+        "type": "requirement",
+        "requirementId": "REQ-1",
+        "manifestText": "Apply one valid discount code and return subtotal, discount, and total.",
+        "matchedTests": [
+          "applies a valid discount code"
+        ]
+      },
+      "evidence": [
+        {
+          "name": "applies a valid discount code",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C1",
+      "method": "code_review",
+      "result": "pass",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "The project is configured with TypeScript (tsconfig.json), Express (package.json), and Node 22 (via @types/node in package.json, which is compatible with Node 20+ requirements).",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The project is configured with TypeScript (tsconfig.json), Express (package.json), and Node 22 (via @types/node in package.json, which is compatible with Node 20+ requirements).",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The application is built using TypeScript (v5.7.2/tsconfig.json), Express (v4.21.2), and Node.js.",
+            "files": [
+              "package.json",
+              "tsconfig.json",
+              "src/app.ts"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    },
+    {
+      "id": "C4",
+      "method": "code_review",
+      "result": "pass",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "The codebase includes both Jest and supertest in the package.json dependencies and provides a working test suite in tests/app.test.ts that utilizes these libraries.",
+            "files": [
+              "package.json",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The codebase includes both Jest and supertest in the package.json dependencies and provides a working test suite in tests/app.test.ts that utilizes these libraries.",
+            "files": [
+              "package.json",
+              "tests/app.test.ts"
+            ]
+          },
+          {
+            "verdict": "pass",
+            "reason": "The codebase includes both Jest and supertest in the package.json dependencies and provides a working test suite in tests/app.test.ts that utilizes these libraries.",
+            "files": [
+              "package.json",
+              "tests/app.test.ts"
+            ]
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    }
+  ]
+}
