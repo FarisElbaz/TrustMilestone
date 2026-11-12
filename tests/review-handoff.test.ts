@@ -34,6 +34,13 @@ test("resolves release and refuses double resolution", async () => {
   await expect(resolveReviewHandoff(caseId, "release")).rejects.toThrow("already resolved");
 });
 
+test("resolves reject by voiding the authorization and refuses a second decision", async () => {
+  await writeEscalationReview(caseId, "submission", outcomes, payment);
+  await expect(resolveReviewHandoff(caseId, "reject", "reviewer")).resolves.toMatchObject({ status: "resolved", decision: "reject" });
+  await expect(fs.readFile(path.join(output, "paypal.json"), "utf8")).resolves.toContain('"voidedAt"');
+  await expect(resolveReviewHandoff(caseId, "release")).rejects.toThrow("already resolved");
+});
+
 test("reject after capture becomes needs_review without a PayPal operation", async () => {
   const captured = { ...payment, milestones: [{ number: 1, amount: "1.00", captureId: "capture-1", status: "released" as const, timestamp: new Date().toISOString() }] };
   await fs.writeFile(path.join(output, "paypal.json"), JSON.stringify(captured));

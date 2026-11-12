@@ -1,0 +1,54 @@
+{
+  "caseId": "e2e-reject-1794339745299",
+  "summary": "Build a Node 20 Express TypeScript service that creates a product order given an ID and quantity, returns a new order ID, calculates total price, and rejects negative quantities with a bad-request response.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project runs on Node 20, uses Express and TypeScript, and includes Jest and supertest for testing.",
+      "method": "test",
+      "status": "ready",
+      "source": "STACK AND CONSTRAINTS: Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "The endpoint accepts a product ID and a quantity to place an order.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "The service response includes a newly generated order ID.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID"
+    },
+    {
+      "id": "C4",
+      "criterion": "The service calculates the total price of the order based on the product price.",
+      "method": "test",
+      "status": "needs_clarification",
+      "source": "and calculate the total price from the product price."
+    },
+    {
+      "id": "C5",
+      "criterion": "A negative quantity returns an HTTP 400 bad-request response with a clear error message.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [
+    {
+      "question": "How should product prices be retrieved (e.g., hardcoded, from an in-memory store, or passed via database/external source)?",
+      "affects": [
+        "C4"
+      ]
+    }
+  ],
+  "out_of_scope": [],
+  "status": "approved",
+  "proposedAt": "2026-11-10T19:42:31.937Z",
+  "approvedAt": "2026-11-10T19:42:31.949Z",
+  "approvedBy": "E2E client"
+}

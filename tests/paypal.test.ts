@@ -27,6 +27,20 @@ test("caches OAuth and sends request IDs on POST operations", async () => {
   await expect(captureAuthorization("auth-1", "1.00", "USD")).resolves.toMatchObject({ captureId: "capture-1" });
   expect(calls[1].headers).toHaveProperty("PayPal-Request-Id");
   expect(calls[2].headers).toHaveProperty("PayPal-Request-Id");
+  expect(calls[1].headers).toMatchObject({ Authorization: "Bearer token", Accept: "application/json" });
+  expect(calls[2].headers).toMatchObject({ Authorization: "Bearer token", Accept: "application/json" });
+  expect(JSON.parse(String(calls[2].body))).toMatchObject({ final_capture: true });
+});
+
+test("reuses the supplied request ID for a retry", async () => {
+  const calls: RequestInit[] = [];
+  jest.spyOn(global, "fetch").mockImplementation(async (_input, init) => {
+    calls.push(init ?? {});
+    if (calls.length === 1) return response({ access_token: "token", expires_in: 3600 });
+    return response({ id: "capture-1", status: "COMPLETED" });
+  });
+  await captureAuthorization("auth-1", "1.00", "USD", "stable-request-id");
+  expect(calls[1].headers).toMatchObject({ "PayPal-Request-Id": "stable-request-id" });
 });
 
 test("maps order authorization and uses the documented void and payout paths", async () => {

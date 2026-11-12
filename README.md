@@ -7,6 +7,7 @@ Requires Node 20 and `GEMINI_API_KEY` for non-mocked model calls.
 ```powershell
 npm install
 npm test
+npx playwright test
 ```
 
 ## Hosted web application
@@ -15,6 +16,14 @@ The Express application keeps the existing single-page interface and adds
 multi-user accounts, role checks, CSRF protection, security headers, and
 SQLite persistence. PayPal credentials and the Gemini key are server-only.
 PayPal operations remain sandbox-only.
+
+The hosted interface is the Milestone desk operations console. See
+[DESIGN.md](./DESIGN.md) for the visual and interaction direction. It supports
+light and dark themes, responsive case tables, the full delivery stepper,
+reviewer queue, worker upload flow, and accessible status/error announcements.
+Browser coverage lives in `tests/ui.browser.spec.ts`; Playwright starts the app
+in mock payment mode for the suite. Reference screenshots are in
+`docs/screenshots/`.
 
 ```powershell
 npm run migrate
@@ -63,9 +72,14 @@ npm run criteria -- --case c01
 npm run fund -- --case c01 --amount 10.00 --currency USD
 npm run payment:status -- --case c01
 npm run review -- --case c01 --decision release
+npm run diagnose:orders
+npm run test:live
 ```
 
 The implementation refuses missing credentials, non-sandbox PayPal hosts, or
 environments other than `sandbox`. Existing PayPal state files under
 `out/<case-id>/` are retained for compatibility while hosted records are also
-stored in SQLite.
+stored in SQLite. The live test creates its own sandbox `AUTHORIZE` order and
+stores its ID in `out/live-test/paypal.json`; no manually supplied order ID is
+needed. Approve the printed URL in the buyer sandbox account while the test
+polls PayPal for approval.

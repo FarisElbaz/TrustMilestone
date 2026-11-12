@@ -18,6 +18,7 @@ const criteria_approval_1 = require("./criteria-approval");
 const milestone_1 = require("./milestone");
 const review_handoff_1 = require("./review-handoff");
 const verify_1 = require("./verify");
+const evidence_1 = require("./paypal/evidence");
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const casePattern = /^[A-Za-z0-9._-]+$/;
 const maxUploadBytes = 50 * 1024 * 1024;
@@ -105,6 +106,16 @@ function required(body, key) {
 }
 function recordEvent(caseId, actorId, type, payload = {}) {
     db().prepare("INSERT INTO events(case_id,actor_id,type,payload,created_at) VALUES(?,?,?,?,?)").run(caseId ?? null, actorId ?? null, type, JSON.stringify(payload), (0, database_1.now)());
+}
+async function readOptionalJson(filename) {
+    try {
+        return JSON.parse(await promises_1.default.readFile(filename, "utf8"));
+    }
+    catch (error) {
+        if (error.code === "ENOENT")
+            return undefined;
+        throw error;
+    }
 }
 function persistPayment(caseId, payment) {
     const value = payment;
@@ -233,6 +244,10 @@ function createApp() {
         }
     });
     app.post("/api/auth/logout", requireAuth, (req, res) => req.session.destroy(() => res.status(204).end()));
+    app.get("/api/auth/status", (req, res) => {
+        const user = req.session.userId ? userById(req.session.userId) : undefined;
+        res.json(user ? { authenticated: true, user: publicUser(user), csrf: req.session.csrf } : { authenticated: false });
+    });
     app.get("/api/auth/me", requireAuth, (req, res) => res.json({ user: publicUser(req.user), csrf: req.session.csrf }));
     app.get("/api/cases", requireAuth, (req, res) => {
         const query = req.user.role === "reviewer" ? "SELECT * FROM cases ORDER BY created_at DESC" : "SELECT * FROM cases WHERE owner_id = ? OR worker_id = ? ORDER BY created_at DESC";
@@ -263,7 +278,76 @@ function createApp() {
             const record = caseForUser(String(req.params.id), req.user);
             const criteria = (0, criteria_approval_1.readStoredCriteria)(record.id).catch(() => undefined);
             const payment = (0, milestone_1.getPaymentRecord)(record.id).catch(() => undefined);
-            Promise.all([criteria, payment]).then(([c, p]) => res.json({ ...record, criteria: c, payment: p })).catch(next);
+            const result = readOptionalJson(node_path_1.default.resolve("out", record.id, "result.json"));
+            const review = readOptionalJson(node_path_1.default.resolve("out", record.id, "review.json"));
+            const evidence = (0, evidence_1.readEvidence)(record.id);
+            Promise.all([criteria, payment, result, review, evidence]).then(([c, p, verification, reviewRecord, paymentEvidence]) => {
+                const status = verification && typeof verification.decision === "string" ? verification.decision : record.status;
+                const worker = userById(record.workerId);
+                res.json({ ...record, status, worker: worker ? { name: worker.name, paypalEmail: worker.paypalEmail } : undefined, criteria: c, payment: p, verification, decision: verification, review: reviewRecord, evidence: paymentEvidence });
+            }).catch(next);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+    app.get("/api/cases/:id/timeline", requireAuth, (req, res, next) => {
+        try {
+            const record = caseForUser(String(req.params.id), req.user);
+            const rows = db().prepare("SELECT events.*, users.name AS actor_name FROM events LEFT JOIN users ON users.id = events.actor_id WHERE case_id = ? ORDER BY events.created_at ASC, events.id ASC").all(record.id);
+            res.json(rows.map((row) => ({ id: row.id, type: row.type, actor: row.actor_name ?? undefined, createdAt: row.created_at, payload: JSON.parse(String(row.payload)) })));
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+    app.get("/api/reviews/queue", requireAuth, async (req, res, next) => {
+        try {
+            if (req.user.role !== "reviewer") {
+                res.status(403).json({ error: "Reviewer access required." });
+                return;
+            }
+            const rows = db().prepare("SELECT id FROM cases ORDER BY created_at DESC").all();
+            const queue = [];
+            for (const row of rows) {
+                try {
+                    const review = await (0, review_handoff_1.readReview)(String(row.id));
+                    if (review.status === "pending") {
+                        const remaining = (0, review_handoff_1.timeRemaining)(review.expirationTime);
+                        queue.push({ id: row.id, decision: "escalated", expirationTime: review.expirationTime, timeRemaining: remaining.text, milliseconds: remaining.milliseconds, criteria: review.criteria });
+                    }
+                }
+                catch { /* Cases without a review handoff are not queue items. */ }
+            }
+            queue.sort((a, b) => a.milliseconds - b.milliseconds);
+            res.json(queue);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+    app.post("/api/cases/:id/payout/refresh", requireAuth, async (req, res, next) => {
+        try {
+            const record = caseForUser(String(req.params.id), req.user);
+            const status = await (0, milestone_1.refreshPayoutStatus)(record.id);
+            const payment = await (0, milestone_1.getPaymentRecord)(record.id);
+            const milestone = payment.milestones[payment.milestones.length - 1];
+            if (milestone)
+                db().prepare("INSERT INTO payouts(case_id,paypal_batch_id,status,payload,created_at) VALUES(?,?,?,?,?)").run(record.id, milestone.payoutBatchId ?? null, milestone.payoutStatus ?? "unknown", JSON.stringify(milestone), (0, database_1.now)());
+            res.json({ status, payment, evidence: await (0, evidence_1.readEvidence)(record.id) });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+    app.post("/api/cases/:id/evidence/contractor", requireAuth, async (req, res, next) => {
+        try {
+            const record = caseForUser(String(req.params.id), req.user);
+            if (req.user.id !== record.ownerId && req.user.id !== record.workerId)
+                throw new Error("Only a case participant may record contractor balances.");
+            const body = jsonBody(req);
+            const evidence = await (0, evidence_1.recordContractorBalances)(record.id, Number(body.milestoneNumber ?? 1), required(body, "before"), required(body, "after"), await (0, milestone_1.getPaymentRecord)(record.id));
+            res.json(evidence);
         }
         catch (error) {
             next(error);

@@ -2,18 +2,19 @@
   "caseId": "c01",
   "amount": "10.00",
   "currency": "USD",
-  "createdAt": "2026-11-07T17:32:03.367Z",
+  "createdAt": "2026-11-11T13:28:47.021Z",
   "milestones": [
     {
       "number": 1,
       "amount": "10.00",
       "status": "released",
-      "timestamp": "2026-11-07T17:32:13.633Z"
+      "timestamp": "2026-11-11T13:28:57.341Z"
     }
   ],
   "paypalResponses": [],
+  "operations": [],
   "authorizationId": "mock-auth-c01",
-  "authorizedAt": "2026-11-07T17:32:03.367Z",
+  "authorizedAt": "2026-11-11T13:28:47.021Z",
   "authorizationStatus": "AUTHORIZED",
-  "authorizationExpirationTime": "2026-12-06T17:32:03.367Z"
+  "authorizationExpirationTime": "2026-12-10T13:28:47.021Z"
 }

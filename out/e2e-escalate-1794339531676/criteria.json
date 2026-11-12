@@ -1,0 +1,38 @@
+{
+  "caseId": "e2e-escalate-1794339531676",
+  "summary": "Build a Node 20, Express, and TypeScript service to place an order given a product ID and quantity, returning a new order ID and total price, and rejecting negative quantities.",
+  "criteria": [
+    {
+      "id": "C1",
+      "criterion": "The project runs on Node 20 and uses Express, TypeScript, Jest, and supertest.",
+      "method": "code_review",
+      "status": "ready",
+      "source": "Node 20, Express, TypeScript, Jest, supertest"
+    },
+    {
+      "id": "C2",
+      "criterion": "Accepts an order request containing a product ID and a quantity.",
+      "method": "test",
+      "status": "ready",
+      "source": "I need to place an order for a product by giving its ID and the quantity I want."
+    },
+    {
+      "id": "C3",
+      "criterion": "Provides a new order ID and calculates the total price from the product price upon a successful order.",
+      "method": "test",
+      "status": "ready",
+      "source": "The service should provide a new order ID and calculate the total price from the product price."
+    },
+    {
+      "id": "C4",
+      "criterion": "Rejects a negative quantity with a bad-request response.",
+      "method": "test",
+      "status": "ready",
+      "source": "A negative quantity should be rejected with a clear bad-request response."
+    }
+  ],
+  "open_questions": [],
+  "out_of_scope": [],
+  "status": "proposed",
+  "proposedAt": "2026-11-10T19:38:53.179Z"
+}

@@ -5,6 +5,8 @@ loadEnvironment();
 
 export const PAYPAL_BASE_URL = (process.env.PAYPAL_API_BASE ?? "https://api-m.sandbox.paypal.com").trim().replace(/\/+$/, "");
 let tokenCache: { accessToken: string; expiresAt: number } | undefined;
+const timeoutMs = 15_000;
+const retryDelays = [2_000, 4_000, 8_000];
 
 export class PayPalApiError extends Error {
   constructor(public readonly status: number, public readonly body: string) {
@@ -26,11 +28,28 @@ function safeError(status: number, body: string): Error {
   return new PayPalApiError(status, body.replace(/Bearer\s+\S+/gi, "******").replace(/(client_secret|access_token|client_id)["'=:\s]+[^,\s}]+/gi, "$1=[redacted]"));
 }
 
+async function requestWithRetry(url: string, init: RequestInit): Promise<Response> {
+  for (let attempt = 0; ; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, { ...init, signal: controller.signal });
+      if (response.status < 500 || attempt >= retryDelays.length) return response;
+      await new Promise((resolve) => setTimeout(resolve, retryDelays[attempt]));
+    } catch (error) {
+      if (attempt >= retryDelays.length) throw error;
+      await new Promise((resolve) => setTimeout(resolve, retryDelays[attempt]));
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+}
+
 async function accessToken(): Promise<string> {
   const now = Date.now();
   if (tokenCache && tokenCache.expiresAt > now + 60_000) return tokenCache.accessToken;
   const { clientId, clientSecret } = credentials();
-  const response = await fetch(`${PAYPAL_BASE_URL}/v1/oauth2/token`, {
+  const response = await requestWithRetry(`${PAYPAL_BASE_URL}/v1/oauth2/token`, {
     method: "POST",
     headers: {
       Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
@@ -49,16 +68,20 @@ async function accessToken(): Promise<string> {
 
 export function resetPayPalTokenCache(): void { tokenCache = undefined; }
 
-export async function paypalRequest<T>(method: string, endpoint: string, body?: unknown): Promise<T> {
+export async function paypalRequestWithStatus<T>(method: string, endpoint: string, body?: unknown, requestId: string = crypto.randomUUID()): Promise<{ value: T; status: number }> {
   if (!endpoint.startsWith("/")) throw new Error("PayPal endpoint must be relative to the sandbox host.");
   const token = await accessToken();
   const headers: Record<string, string> = { Authorization: `Bearer ${token}`, Accept: "application/json" };
   if (body !== undefined) headers["Content-Type"] = "application/json";
-  if (method === "POST") headers["PayPal-Request-Id"] = crypto.randomUUID();
-  const response = await fetch(`${PAYPAL_BASE_URL}${endpoint}`, {
+  if (method === "POST") headers["PayPal-Request-Id"] = requestId;
+  const response = await requestWithRetry(`${PAYPAL_BASE_URL}${endpoint}`, {
     method, headers, body: body === undefined ? undefined : JSON.stringify(body)
   });
   const responseBody = await response.text();
   if (!response.ok) throw safeError(response.status, responseBody);
-  return responseBody ? JSON.parse(responseBody) as T : {} as T;
+  return { value: responseBody ? JSON.parse(responseBody) as T : {} as T, status: response.status };
+}
+
+export async function paypalRequest<T>(method: string, endpoint: string, body?: unknown, requestId: string = crypto.randomUUID()): Promise<T> {
+  return (await paypalRequestWithStatus<T>(method, endpoint, body, requestId)).value;
 }

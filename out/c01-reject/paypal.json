@@ -2,12 +2,13 @@
   "caseId": "c01-reject",
   "amount": "10.00",
   "currency": "USD",
-  "createdAt": "2026-11-07T17:32:13.636Z",
+  "createdAt": "2026-11-11T13:28:57.346Z",
   "milestones": [],
   "paypalResponses": [],
+  "operations": [],
   "authorizationId": "mock-auth-c01-reject",
-  "authorizedAt": "2026-11-07T17:32:13.636Z",
+  "authorizedAt": "2026-11-11T13:28:57.346Z",
   "authorizationStatus": "VOIDED",
-  "authorizationExpirationTime": "2026-12-06T17:32:13.636Z",
-  "voidedAt": "2026-11-07T17:32:26.215Z"
+  "authorizationExpirationTime": "2026-12-10T13:28:57.346Z",
+  "voidedAt": "2026-11-11T13:29:20.077Z"
 }

@@ -1,7 +1,7 @@
 {
   "caseId": "c03",
   "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\testset\\cases\\c01\\reference",
-  "escalatedAt": "2026-11-07T17:32:26.233Z",
+  "escalatedAt": "2026-11-11T13:29:20.096Z",
   "criteria": [
     {
       "id": "C1",
@@ -11,6 +11,6 @@
     }
   ],
   "authorizationId": "mock-auth-c03",
-  "expirationTime": "2026-12-06T17:32:26.229Z",
+  "expirationTime": "2026-12-10T13:29:20.093Z",
   "status": "pending"
 }

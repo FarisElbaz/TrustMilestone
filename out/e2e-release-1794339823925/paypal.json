@@ -1,0 +1,30 @@
+{
+  "caseId": "e2e-release-1794339823925",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-10T19:43:50.203Z",
+  "milestones": [],
+  "paypalResponses": [],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "a2d5b504-f829-4318-9842-c74be02a139f",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-10T19:43:50.203Z"
+    }
+  ],
+  "orderId": "3M243382BJ255145A",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "98A64427EH883704U",
+  "authorizationStatus": "CREATED",
+  "authorizationExpirationTime": "2026-12-09T19:43:52Z",
+  "authorizedAt": "2026-11-10T19:43:59.290Z",
+  "escalation": {
+    "deadline": "2026-11-11T19:44:10.020Z",
+    "recordedAt": "2026-11-10T19:44:10.021Z"
+  },
+  "hold": {
+    "deadline": "2026-11-11T19:44:10.020Z",
+    "recordedAt": "2026-11-10T19:44:10.021Z"
+  }
+}

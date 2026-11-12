@@ -1,22 +1,24 @@
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { validateAmount, validateCurrency, validatePaymentEnvironment } from "./paypal/config";
 import { authorizeOrder, captureAuthorization, createAuthorizeOrder, getAuthorization, getOrder } from "./paypal/orders";
-import { getPayout, sendPayout, voidAuthorization, waitForPayout } from "./paypal/payments";
+import { getPayout, sendPayout, voidAuthorization } from "./paypal/payments";
 
-export interface PayPalResponseRecord { operation: string; status: string; recordedAt: string }
+export interface PayPalResponseRecord { operation: string; status: string; recordedAt: string; requestId?: string }
+export interface PayPalOperationRecord { operation: string; requestId: string; status: string; recordedAt: string }
 export interface MilestoneRecord {
   number: number; amount: string; captureId?: string; invoiceId?: string; captureStatus?: string;
   payoutBatchId?: string; payoutStatus?: string; payoutItemStatuses?: string[];
   payoutNote?: string;
-  status: "released" | "pending" | "failed" | "voided"; timestamp: string;
+  status: "released" | "released_unverified" | "pending" | "failed" | "needs_review" | "voided"; timestamp: string;
 }
 export interface PayPalRecord {
   caseId: string; amount: string; currency: string; createdAt: string; orderId?: string; approvalUrl?: string;
   orderStatus?: string; authorizationId?: string; authorizedAt?: string; authorizationStatus?: string;
   authorizationResponseStatus?: string; authorizationExpirationTime?: string;
   authorizationAmount?: string; authorizationCurrency?: string; milestones: MilestoneRecord[];
-  voidedAt?: string; needsReview?: string; paypalResponses?: PayPalResponseRecord[];
+  voidedAt?: string; needsReview?: string; paypalResponses?: PayPalResponseRecord[]; operations?: PayPalOperationRecord[];
   hold?: { deadline: string; recordedAt: string };
   escalation?: { deadline: string; recordedAt: string; resolvedAt?: string; decision?: "release" | "reject" };
 }
@@ -33,6 +35,7 @@ const readRecord = async (caseId: string): Promise<PayPalRecord> => {
     const record = JSON.parse(await fs.readFile(recordPath(caseId), "utf8")) as PayPalRecord;
     record.milestones ??= [];
     record.paypalResponses ??= [];
+    record.operations ??= [];
     return record;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") throw new Error(`No PayPal record exists for case ${caseId}.`);
@@ -44,6 +47,7 @@ const writeRecord = async (record: PayPalRecord) => {
   await fs.mkdir(path.dirname(recordPath(record.caseId)), { recursive: true });
   await fs.writeFile(recordPath(record.caseId), JSON.stringify(record, null, 2));
 };
+export async function savePaymentRecord(record: PayPalRecord): Promise<void> { await writeRecord(record); }
 export async function markNeedsReview(caseId: string, reason: string): Promise<PayPalRecord> {
   const record = await readRecord(caseId);
   record.needsReview = reason;
@@ -64,6 +68,18 @@ function observe(record: PayPalRecord, operation: string, status: string, catego
     throw new Error(record.needsReview);
   }
 }
+function beginOperation(record: PayPalRecord, operation: string): string {
+  record.operations ??= [];
+  const existing = record.operations.find((item) => item.operation === operation);
+  if (existing) return existing.requestId;
+  const entry = { operation, requestId: crypto.randomUUID(), status: "pending", recordedAt: new Date().toISOString() };
+  record.operations.push(entry);
+  return entry.requestId;
+}
+function finishOperation(record: PayPalRecord, operation: string, status: string): void {
+  const entry = record.operations?.find((item) => item.operation === operation);
+  if (entry) { entry.status = status; entry.recordedAt = new Date().toISOString(); }
+}
 function assertCaseId(caseId: string): void {
   if (!/^[A-Za-z0-9._-]+$/.test(caseId)) throw new Error("Invalid case ID.");
 }
@@ -76,14 +92,16 @@ export async function fundCase(caseId: string, amount: string, currency = proces
   } catch (error) {
     if (!(error instanceof Error) || !error.message.startsWith("No PayPal record")) throw error;
   }
-  const record: PayPalRecord = { caseId, amount, currency, createdAt: new Date().toISOString(), milestones: [], paypalResponses: [] };
+  const record: PayPalRecord = { caseId, amount, currency, createdAt: new Date().toISOString(), milestones: [], paypalResponses: [], operations: [] };
   if (paymentMode() === "mock") {
     record.authorizationId = `mock-auth-${caseId}`; record.authorizedAt = record.createdAt;
     record.authorizationStatus = "AUTHORIZED"; record.authorizationExpirationTime = new Date(Date.now() + 29 * 86400000).toISOString();
   } else {
     assertSandbox();
-    const order = await createAuthorizeOrder(amount, currency, caseId);
+    const requestId = beginOperation(record, "create-order"); await writeRecord(record);
+    const order = await createAuthorizeOrder(amount, currency, caseId, requestId);
     record.orderId = order.orderId; record.approvalUrl = order.approvalUrl; record.orderStatus = "CREATED";
+    finishOperation(record, "create-order", record.orderStatus);
     observe(record, "create-order", record.orderStatus, "order");
   }
   await writeRecord(record); return record;
@@ -101,12 +119,14 @@ export async function paymentStatus(caseId: string, buyerEmail = process.env.PAY
     await writeRecord(record); throw new Error("PayPal payer email does not match PAYPAL_BUYER_EMAIL.");
   }
   if (order.status !== "APPROVED") { await writeRecord(record); throw new Error(`PayPal order ${record.orderId} is not approved (status: ${order.status}).`); }
-  const authorization = await authorizeOrder(record.orderId);
+  const requestId = beginOperation(record, "authorize-order"); await writeRecord(record);
+  const authorization = await authorizeOrder(record.orderId, requestId);
   if (!authorization.authorizationId || !authorization.expirationTime) throw new Error("PayPal authorization response did not include ID and expiration_time.");
   record.authorizationId = authorization.authorizationId; record.authorizedAt = new Date().toISOString();
   record.authorizationStatus = authorization.status ?? "UNKNOWN"; record.authorizationResponseStatus = record.authorizationStatus;
   record.authorizationExpirationTime = authorization.expirationTime;
   record.authorizationAmount = authorization.amount?.value; record.authorizationCurrency = authorization.amount?.currency_code;
+  finishOperation(record, "authorize-order", record.authorizationStatus);
   observe(record, "authorize-order", record.authorizationStatus, "authorization");
   await writeRecord(record); return record;
 }
@@ -131,23 +151,28 @@ export async function releaseMilestone(caseId: string, amount: string, milestone
   else {
     assertSandbox();
     if (record.authorizationAmount && cents(amount) > cents(record.authorizationAmount)) throw new Error("Capture exceeds the authorized amount.");
-    const capture = await captureAuthorization(record.authorizationId!, amount, record.currency);
+    const requestId = beginOperation(record, "capture"); await writeRecord(record);
+    const capture = await captureAuthorization(record.authorizationId!, amount, record.currency, requestId);
     item.captureId = capture.captureId; item.invoiceId = capture.invoiceId; item.captureStatus = capture.status;
-    if (!capture.captureId || !capture.status) throw new Error("PayPal capture response was incomplete.");
-    observe(record, "capture", capture.status, "capture");
+    if (!capture.captureId || !capture.status) {
+      item.status = "needs_review"; record.needsReview = "PayPal capture response was incomplete."; record.milestones.push(item); await writeRecord(record); return;
+    }
+    finishOperation(record, "capture", capture.status);
     record.milestones.push(item);
     await writeRecord(record);
-    const submittedPayout = await sendPayout(caseId, contractorEmail ?? "", amount, record.currency, milestoneNumber);
+    if (capture.status !== "COMPLETED") {
+      item.status = "needs_review"; record.needsReview = `Capture returned ${capture.status}; payout was not submitted.`; await writeRecord(record); return;
+    }
+    observe(record, "capture", capture.status, "capture");
+    await writeRecord(record);
+    const payoutRequestId = beginOperation(record, "payout"); await writeRecord(record);
+    const submittedPayout = await sendPayout(caseId, contractorEmail ?? "", amount, record.currency, milestoneNumber, payoutRequestId);
     if (!submittedPayout.batchId || !submittedPayout.batchStatus) throw new Error("PayPal payout response was incomplete.");
     item.payoutBatchId = submittedPayout.batchId;
     item.payoutStatus = submittedPayout.batchStatus;
+    finishOperation(record, "payout", submittedPayout.batchStatus);
     await writeRecord(record);
-    const payout = await waitForPayout(submittedPayout.batchId);
-    item.payoutStatus = payout.batchStatus; item.payoutItemStatuses = payout.itemStatuses;
-    if (payout.itemStatuses.includes("UNCLAIMED")) item.payoutNote = "Contractor sandbox recipient has no PayPal account configured.";
-    if (!payout.batchStatus) throw new Error("PayPal payout status response was incomplete.");
-    observe(record, "payout", payout.batchStatus, "payout");
-    item.status = "released";
+    item.status = "released_unverified";
     await writeRecord(record);
     return;
   }
@@ -157,7 +182,15 @@ export async function releaseMilestone(caseId: string, amount: string, milestone
 export async function rejectMilestone(caseId: string): Promise<void> {
   const record = await requireAuthorized(caseId);
   if (record.milestones.length) throw new Error("Cannot void an authorization after capture.");
-  if (paymentMode() !== "mock") { assertSandbox(); await voidAuthorization(record.authorizationId!); }
+  if (paymentMode() !== "mock") {
+    assertSandbox();
+    const requestId = beginOperation(record, "void"); await writeRecord(record);
+    await voidAuthorization(record.authorizationId!, requestId);
+    const result = await getAuthorization(record.authorizationId!);
+    const status = result.status ?? "UNKNOWN";
+    finishOperation(record, "void", status); observe(record, "void", status, "authorization");
+    if (status !== "VOIDED") { record.needsReview = `Void returned ${status}.`; await writeRecord(record); throw new Error(record.needsReview); }
+  }
   record.authorizationStatus = "VOIDED"; record.voidedAt = new Date().toISOString(); await writeRecord(record);
 }
 export async function holdMilestone(caseId: string, deadline: string | Date): Promise<void> {
@@ -177,6 +210,8 @@ export async function refreshPayoutStatus(caseId: string, milestoneNumber = 1): 
   if (!milestone?.payoutBatchId || paymentMode() === "mock") return milestone?.payoutStatus;
   const payout = await getPayout(milestone.payoutBatchId); milestone.payoutStatus = payout.batchStatus; milestone.payoutItemStatuses = payout.itemStatuses;
   if (payout.batchStatus) observe(record, "payout-status", payout.batchStatus, "payout");
+  if (payout.itemStatuses.includes("UNCLAIMED")) milestone.payoutNote = "Contractor sandbox recipient has no PayPal account configured.";
+  if (payout.itemStatuses.includes("SUCCESS") && payout.batchStatus === "SUCCESS") milestone.status = "released_unverified";
   await writeRecord(record); return milestone.payoutStatus;
 }
 export interface Milestone { releaseMilestone(caseId: string, amount: string): Promise<void>; holdMilestone(caseId: string, deadline: string | Date): Promise<void>; rejectMilestone(caseId: string): Promise<void>; }

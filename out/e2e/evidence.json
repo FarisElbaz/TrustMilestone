@@ -1,0 +1,412 @@
+﻿{
+    "startedAt":  "2026-11-10T19:43:43.444Z",
+    "environment":  {
+                        "paymentMode":  "sandbox",
+                        "paypalEnv":  "sandbox",
+                        "apiBase":  "https://api-m.sandbox.paypal.com",
+                        "clientIdPrefix":  "BAAPLr",
+                        "required":  {
+                                         "PAYPAL_BUYER_EMAIL":  true,
+                                         "PAYPAL_CONTRACTOR_EMAIL":  true,
+                                         "PAYPAL_TEST_CARD_NUMBER":  true,
+                                         "PAYPAL_TEST_CARD_EXPIRY":  true,
+                                         "PAYPAL_TEST_CARD_SECURITY_CODE":  true,
+                                         "PAYPAL_TEST_CARD_NAME":  true,
+                                         "GEMINI_API_KEY":  true,
+                                         "OPERATOR_NAME":  true
+                                     }
+                    },
+    "cases":  {
+                  "e2e-release-1794339823925":  {
+                                                    "steps":  [
+                                                                  {
+                                                                      "step":  "case-creation",
+                                                                      "timestamp":  "2026-11-10T19:43:43.938Z",
+                                                                      "status":  "PASS",
+                                                                      "httpStatus":  201,
+                                                                      "caseId":  "e2e-release-1794339823925"
+                                                                  },
+                                                                  {
+                                                                      "step":  "criteria-generation",
+                                                                      "timestamp":  "2026-11-10T19:43:50.192Z",
+                                                                      "status":  "PASS",
+                                                                      "httpStatus":  200,
+                                                                      "criteria":  [
+                                                                                       {
+                                                                                           "id":  "C1",
+                                                                                           "criterion":  "The application runs on Node 20 using Express and TypeScript, and includes Jest and supertest for testing.",
+                                                                                           "method":  "code_review",
+                                                                                           "status":  "ready",
+                                                                                           "source":  "Node 20, Express, TypeScript, Jest, supertest"
+                                                                                       },
+                                                                                       {
+                                                                                           "id":  "C2",
+                                                                                           "criterion":  "Accepts an order request containing a product ID and a quantity.",
+                                                                                           "method":  "test",
+                                                                                           "status":  "ready",
+                                                                                           "source":  "I need to place an order for a product by giving its ID and the quantity I want."
+                                                                                       },
+                                                                                       {
+                                                                                           "id":  "C3",
+                                                                                           "criterion":  "Returns a new unique order ID upon successful order placement.",
+                                                                                           "method":  "test",
+                                                                                           "status":  "ready",
+                                                                                           "source":  "The service should provide a new order ID"
+                                                                                       },
+                                                                                       {
+                                                                                           "id":  "C4",
+                                                                                           "criterion":  "Calculates the total price of the order based on the product price.",
+                                                                                           "method":  "test",
+                                                                                           "status":  "needs_clarification",
+                                                                                           "source":  "and calculate the total price from the product price."
+                                                                                       },
+                                                                                       {
+                                                                                           "id":  "C5",
+                                                                                           "criterion":  "Returns a bad-request response when a negative quantity is provided.",
+                                                                                           "method":  "test",
+                                                                                           "status":  "ready",
+                                                                                           "source":  "A negative quantity should be rejected with a clear bad-request response."
+                                                                                       }
+                                                                                   ],
+                                                                      "openQuestions":  [
+                                                                                            {
+                                                                                                "question":  "Where should product prices be retrieved from (e.g., hardcoded, database, or external service), and what is the exact JSON structure and HTTP status code expected for success and bad-request responses?",
+                                                                                                "affects":  [
+                                                                                                                "C3",
+                                                                                                                "C4",
+                                                                                                                "C5"
+                                                                                                            ]
+                                                                                            }
+                                                                                        ]
+                                                                  },
+                                                                  {
+                                                                      "step":  "criteria-approval",
+                                                                      "timestamp":  "2026-11-10T19:43:50.203Z",
+                                                                      "status":  "PASS",
+                                                                      "httpStatus":  200,
+                                                                      "approvedAt":  "2026-11-10T19:43:50.195Z",
+                                                                      "approvedBy":  "E2E client"
+                                                                  },
+                                                                  {
+                                                                      "step":  "card-funding-create",
+                                                                      "timestamp":  "2026-11-10T19:43:53.595Z",
+                                                                      "status":  "COMPLETED",
+                                                                      "paypalId":  "3M243382BJ255145A",
+                                                                      "httpStatus":  201
+                                                                  },
+                                                                  {
+                                                                      "step":  "card-funding-fetch",
+                                                                      "timestamp":  "2026-11-10T19:43:58.337Z",
+                                                                      "status":  "COMPLETED",
+                                                                      "paypalId":  "3M243382BJ255145A",
+                                                                      "httpStatus":  200
+                                                                  },
+                                                                  {
+                                                                      "step":  "authorization",
+                                                                      "timestamp":  "2026-11-10T19:43:59.291Z",
+                                                                      "status":  "CREATED",
+                                                                      "paypalId":  "98A64427EH883704U",
+                                                                      "expirationTime":  "2026-12-09T19:43:52Z",
+                                                                      "httpStatus":  200
+                                                                  },
+                                                                  {
+                                                                      "step":  "balance-before",
+                                                                      "timestamp":  "2026-11-10T19:43:59.747Z",
+                                                                      "status":  "PASS",
+                                                                      "httpStatus":  200,
+                                                                      "balance":  {
+                                                                                      "capturedAt":  "2026-11-10T19:43:59.747Z",
+                                                                                      "currency":  "USD",
+                                                                                      "available":  "4999.00",
+                                                                                      "total":  "4999.00",
+                                                                                      "raw":  {
+                                                                                                  "balances":  [
+                                                                                                                   {
+                                                                                                                       "currency":  "USD",
+                                                                                                                       "total_balance":  {
+                                                                                                                                             "currency_code":  "USD",
+                                                                                                                                             "value":  "4999.00"
+                                                                                                                                         },
+                                                                                                                       "available_balance":  {
+                                                                                                                                                 "currency_code":  "USD",
+                                                                                                                                                 "value":  "4999.00"
+                                                                                                                                             },
+                                                                                                                       "withheld_balance":  {
+                                                                                                                                                "currency_code":  "USD",
+                                                                                                                                                "value":  "0.00"
+                                                                                                                                            }
+                                                                                                                   }
+                                                                                                               ],
+                                                                                                  "account_id":  "PSDM2NWPQJEKA",
+                                                                                                  "as_of_time":  "2026-11-10T17:59:59Z",
+                                                                                                  "last_refresh_time":  "2026-11-10T17:59:59Z"
+                                                                                              }
+                                                                                  }
+                                                                  },
+                                                                  {
+                                                                      "step":  "worker-submission",
+                                                                      "timestamp":  "2026-11-10T19:43:59.789Z",
+                                                                      "status":  "PASS",
+                                                                      "httpStatus":  200,
+                                                                      "files":  [
+                                                                                    "jest.config.js",
+                                                                                    "package-lock.json",
+                                                                                    "package.json",
+                                                                                    "src\\app.ts",
+                                                                                    "tests\\app.test.ts",
+                                                                                    "tsconfig.json"
+                                                                                ],
+                                                                      "checksum":  "504920f55597720ba4d7c9ed546cfd4066be7a34ac8af6f1b60915b0d72b29e9"
+                                                                  },
+                                                                  {
+                                                                      "step":  "verification-and-decision",
+                                                                      "timestamp":  "2026-11-10T19:44:10.023Z",
+                                                                      "status":  "FAIL",
+                                                                      "httpStatus":  200,
+                                                                      "decision":  "escalate"
+                                                                  },
+                                                                  {
+                                                                      "step":  "capture",
+                                                                      "timestamp":  "2026-11-10T19:44:10.024Z",
+                                                                      "httpStatus":  201
+                                                                  },
+                                                                  {
+                                                                      "step":  "payout",
+                                                                      "timestamp":  "2026-11-10T19:44:10.024Z"
+                                                                  },
+                                                                  {
+                                                                      "step":  "balance-after",
+                                                                      "timestamp":  "2026-11-10T19:44:11.825Z",
+                                                                      "status":  "PASS",
+                                                                      "balance":  {
+                                                                                      "capturedAt":  "2026-11-10T19:44:11.825Z",
+                                                                                      "currency":  "USD",
+                                                                                      "available":  "4999.00",
+                                                                                      "total":  "4999.00",
+                                                                                      "raw":  {
+                                                                                                  "balances":  [
+                                                                                                                   {
+                                                                                                                       "currency":  "USD",
+                                                                                                                       "total_balance":  {
+                                                                                                                                             "currency_code":  "USD",
+                                                                                                                                             "value":  "4999.00"
+                                                                                                                                         },
+                                                                                                                       "available_balance":  {
+                                                                                                                                                 "currency_code":  "USD",
+                                                                                                                                                 "value":  "4999.00"
+                                                                                                                                             },
+                                                                                                                       "withheld_balance":  {
+                                                                                                                                                "currency_code":  "USD",
+                                                                                                                                                "value":  "0.00"
+                                                                                                                                            }
+                                                                                                                   }
+                                                                                                               ],
+                                                                                                  "account_id":  "PSDM2NWPQJEKA",
+                                                                                                  "as_of_time":  "2026-11-10T17:59:59Z",
+                                                                                                  "last_refresh_time":  "2026-11-10T17:59:59Z"
+                                                                                              }
+                                                                                  }
+                                                                  }
+                                                              ]
+                                                },
+                  "e2e-reject-1794339851825":  {
+                                                   "steps":  [
+                                                                 {
+                                                                     "step":  "case-creation",
+                                                                     "timestamp":  "2026-11-10T19:44:11.835Z",
+                                                                     "status":  "PASS",
+                                                                     "httpStatus":  201,
+                                                                     "caseId":  "e2e-reject-1794339851825"
+                                                                 },
+                                                                 {
+                                                                     "step":  "case-stop",
+                                                                     "timestamp":  "2026-11-10T19:44:13.458Z",
+                                                                     "status":  "BLOCKED",
+                                                                     "error":  "API POST /api/cases/e2e-reject-1794339851825/criteria HTTP 400: {\"error\":\"Gemini request failed with HTTP 503\"}"
+                                                                 }
+                                                             ]
+                                               },
+                  "e2e-escalate-1794339853458":  {
+                                                     "steps":  [
+                                                                   {
+                                                                       "step":  "case-creation",
+                                                                       "timestamp":  "2026-11-10T19:44:13.470Z",
+                                                                       "status":  "PASS",
+                                                                       "httpStatus":  201,
+                                                                       "caseId":  "e2e-escalate-1794339853458"
+                                                                   },
+                                                                   {
+                                                                       "step":  "criteria-generation",
+                                                                       "timestamp":  "2026-11-10T19:44:19.103Z",
+                                                                       "status":  "PASS",
+                                                                       "httpStatus":  200,
+                                                                       "criteria":  [
+                                                                                        {
+                                                                                            "id":  "C1",
+                                                                                            "criterion":  "The project runs on Node 20 and uses TypeScript, Express, Jest, and supertest.",
+                                                                                            "method":  "code_review",
+                                                                                            "status":  "ready",
+                                                                                            "source":  "Node 20, Express, TypeScript, Jest, supertest"
+                                                                                        },
+                                                                                        {
+                                                                                            "id":  "C2",
+                                                                                            "criterion":  "The service accepts a product ID and a quantity to place an order.",
+                                                                                            "method":  "test",
+                                                                                            "status":  "ready",
+                                                                                            "source":  "I need to place an order for a product by giving its ID and the quantity I want."
+                                                                                        },
+                                                                                        {
+                                                                                            "id":  "C3",
+                                                                                            "criterion":  "The service provides a new order ID upon successfully placing an order.",
+                                                                                            "method":  "test",
+                                                                                            "status":  "ready",
+                                                                                            "source":  "The service should provide a new order ID"
+                                                                                        },
+                                                                                        {
+                                                                                            "id":  "C4",
+                                                                                            "criterion":  "The service calculates the total price from the product price based on the given quantity.",
+                                                                                            "method":  "test",
+                                                                                            "status":  "needs_clarification",
+                                                                                            "source":  "and calculate the total price from the product price."
+                                                                                        },
+                                                                                        {
+                                                                                            "id":  "C5",
+                                                                                            "criterion":  "A negative quantity is rejected with a clear bad-request response (HTTP 400).",
+                                                                                            "method":  "test",
+                                                                                            "status":  "ready",
+                                                                                            "source":  "A negative quantity should be rejected with a clear bad-request response."
+                                                                                        }
+                                                                                    ],
+                                                                       "openQuestions":  [
+                                                                                             {
+                                                                                                 "question":  "Where do product IDs and product prices come from? Is there an existing database, a mock data source, or an expected request payload structure for product details?",
+                                                                                                 "affects":  [
+                                                                                                                 "C4"
+                                                                                                             ]
+                                                                                             }
+                                                                                         ]
+                                                                   },
+                                                                   {
+                                                                       "step":  "criteria-approval",
+                                                                       "timestamp":  "2026-11-10T19:44:19.114Z",
+                                                                       "status":  "PASS",
+                                                                       "httpStatus":  200,
+                                                                       "approvedAt":  "2026-11-10T19:44:19.103Z",
+                                                                       "approvedBy":  "E2E client"
+                                                                   },
+                                                                   {
+                                                                       "step":  "card-funding-create",
+                                                                       "timestamp":  "2026-11-10T19:44:22.439Z",
+                                                                       "status":  "COMPLETED",
+                                                                       "paypalId":  "12L63170VA015104T",
+                                                                       "httpStatus":  201
+                                                                   },
+                                                                   {
+                                                                       "step":  "card-funding-fetch",
+                                                                       "timestamp":  "2026-11-10T19:44:24.761Z",
+                                                                       "status":  "COMPLETED",
+                                                                       "paypalId":  "12L63170VA015104T",
+                                                                       "httpStatus":  200
+                                                                   },
+                                                                   {
+                                                                       "step":  "authorization",
+                                                                       "timestamp":  "2026-11-10T19:44:25.330Z",
+                                                                       "status":  "CREATED",
+                                                                       "paypalId":  "70K59248JE384035W",
+                                                                       "expirationTime":  "2026-12-09T19:44:21Z",
+                                                                       "httpStatus":  200
+                                                                   },
+                                                                   {
+                                                                       "step":  "balance-before",
+                                                                       "timestamp":  "2026-11-10T19:44:25.686Z",
+                                                                       "status":  "PASS",
+                                                                       "httpStatus":  200,
+                                                                       "balance":  {
+                                                                                       "capturedAt":  "2026-11-10T19:44:25.686Z",
+                                                                                       "currency":  "USD",
+                                                                                       "available":  "4999.00",
+                                                                                       "total":  "4999.00",
+                                                                                       "raw":  {
+                                                                                                   "balances":  [
+                                                                                                                    {
+                                                                                                                        "currency":  "USD",
+                                                                                                                        "total_balance":  {
+                                                                                                                                              "currency_code":  "USD",
+                                                                                                                                              "value":  "4999.00"
+                                                                                                                                          },
+                                                                                                                        "available_balance":  {
+                                                                                                                                                  "currency_code":  "USD",
+                                                                                                                                                  "value":  "4999.00"
+                                                                                                                                              },
+                                                                                                                        "withheld_balance":  {
+                                                                                                                                                 "currency_code":  "USD",
+                                                                                                                                                 "value":  "0.00"
+                                                                                                                                             }
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                   "account_id":  "PSDM2NWPQJEKA",
+                                                                                                   "as_of_time":  "2026-11-10T17:59:59Z",
+                                                                                                   "last_refresh_time":  "2026-11-10T17:59:59Z"
+                                                                                               }
+                                                                                   }
+                                                                   },
+                                                                   {
+                                                                       "step":  "worker-submission",
+                                                                       "timestamp":  "2026-11-10T19:44:25.718Z",
+                                                                       "status":  "PASS",
+                                                                       "httpStatus":  200,
+                                                                       "files":  [
+                                                                                     "jest.config.js",
+                                                                                     "package-lock.json",
+                                                                                     "package.json",
+                                                                                     "src\\app.ts",
+                                                                                     "tests\\app.test.ts",
+                                                                                     "tsconfig.json"
+                                                                                 ],
+                                                                       "checksum":  "504920f55597720ba4d7c9ed546cfd4066be7a34ac8af6f1b60915b0d72b29e9"
+                                                                   },
+                                                                   {
+                                                                       "step":  "verification-and-decision",
+                                                                       "timestamp":  "2026-11-10T19:44:41.934Z",
+                                                                       "status":  "PASS",
+                                                                       "httpStatus":  200,
+                                                                       "decision":  "escalate"
+                                                                   },
+                                                                   {
+                                                                       "step":  "review-files",
+                                                                       "timestamp":  "2026-11-10T19:44:41.935Z",
+                                                                       "status":  "PASS",
+                                                                       "reviewJson":  true,
+                                                                       "reviewMd":  true
+                                                                   },
+                                                                   {
+                                                                       "step":  "review-resolution",
+                                                                       "timestamp":  "2026-11-10T19:44:45.125Z",
+                                                                       "status":  "resolved",
+                                                                       "httpStatus":  200,
+                                                                       "decision":  "reject"
+                                                                   }
+                                                               ]
+                                                 }
+              },
+    "finishedAt":  "2026-11-10T19:44:45.125Z",
+    "unitTests":  {
+                      "status":  "PASS",
+                      "suites":  11,
+                      "tests":  52,
+                      "command":  "npm test -- --runInBand",
+                      "httpStatus":  null
+                  },
+    "summary":  {
+                    "release":  "BLOCKED: generated V1 verification routed to escalate because C3-C5 were unclear; no capture or payout",
+                    "reject":  "BLOCKED: criteria generation returned Gemini HTTP 503 before funding",
+                    "escalation":  "PASS: unclear verification produced review.json/review.md and resolved as reject; authorization voided",
+                    "moneyChecks":  {
+                                        "cardFunding":  "VERIFIED: order COMPLETED and authorization recorded",
+                                        "beforeBalance":  "VERIFIED: HTTP 200",
+                                        "capture":  "NOT_VERIFIED",
+                                        "payout":  "NOT_VERIFIED",
+                                        "buyerBalanceAfterVoid":  "NOT_VERIFIED"
+                                    }
+                }
+}

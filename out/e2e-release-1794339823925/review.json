@@ -1,0 +1,67 @@
+{
+  "caseId": "e2e-release-1794339823925",
+  "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\data\\submissions\\e2e-release-1794339823925",
+  "escalatedAt": "2026-11-10T19:44:10.022Z",
+  "criteria": [
+    {
+      "id": "C2",
+      "verdict": "pass",
+      "reason": "Criterion passed.",
+      "evidence": [
+        {
+          "name": "rejects a negative quantity",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-2"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "verdict": "unclear",
+      "reason": "The automated evaluation was inconclusive.",
+      "evidence": []
+    },
+    {
+      "id": "C4",
+      "verdict": "unclear",
+      "reason": "The automated evaluation was inconclusive.",
+      "evidence": []
+    },
+    {
+      "id": "C5",
+      "verdict": "unclear",
+      "reason": "The automated evaluation was inconclusive.",
+      "evidence": []
+    },
+    {
+      "id": "C1",
+      "verdict": "pass",
+      "reason": "Criterion passed.",
+      "evidence": {
+        "verdicts": [
+          {
+            "verdict": "pass",
+            "reason": "E2E judge result",
+            "files": []
+          },
+          {
+            "verdict": "pass",
+            "reason": "E2E judge result",
+            "files": []
+          },
+          {
+            "verdict": "pass",
+            "reason": "E2E judge result",
+            "files": []
+          }
+        ],
+        "combined": "decided",
+        "result": "pass"
+      }
+    }
+  ],
+  "authorizationId": "98A64427EH883704U",
+  "expirationTime": "2026-12-09T19:43:52Z",
+  "status": "pending"
+}

@@ -1,0 +1,22 @@
+{
+  "caseId": "e2e-release-1794339715533",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-10T19:42:01.878Z",
+  "milestones": [],
+  "paypalResponses": [],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "a182326f-8aa0-4697-99d1-44d44fbd2d4b",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-10T19:42:01.878Z"
+    }
+  ],
+  "orderId": "4MA57728HS809121G",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "2Y0743166M815321P",
+  "authorizationStatus": "CREATED",
+  "authorizationExpirationTime": "2026-12-09T19:42:05Z",
+  "authorizedAt": "2026-11-10T19:42:11.265Z"
+}

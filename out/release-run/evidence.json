@@ -1,0 +1,60 @@
+{
+  "caseId": "release-run",
+  "updatedAt": "2026-11-11T13:46:00.000Z",
+  "verification": {
+    "decision": "release",
+    "httpStatus": 200,
+    "criteria": [
+      {
+        "id": "C2",
+        "method": "test",
+        "result": "pass"
+      },
+      {
+        "id": "C3",
+        "method": "test",
+        "result": "pass"
+      },
+      {
+        "id": "C4",
+        "method": "test",
+        "result": "pass"
+      },
+      {
+        "id": "C5",
+        "method": "test",
+        "result": "pass"
+      },
+      {
+        "id": "C1",
+        "method": "code_review",
+        "result": "pass"
+      }
+    ]
+  },
+  "paypal": {
+    "orderId": "3M243382BJ255145A",
+    "orderStatus": "COMPLETED",
+    "authorizationId": "98A64427EH883704U",
+    "authorizationStatus": "CREATED",
+    "captureId": "2DN98015P3235063B",
+    "captureStatus": "COMPLETED",
+    "captureHttpStatus": 201,
+    "payoutBatchId": "7WGSM54P5XMVQ",
+    "payoutStatus": "PENDING",
+    "payoutHttpStatus": 201,
+    "lastStatus": "PENDING",
+    "lastCheckedAt": "2026-11-11T13:46:00.000Z",
+    "payoutBatchStatusFinal": false
+  },
+  "moneyChecks": {
+    "businessBalanceAfterRelease": {
+      "verified": true,
+      "httpStatus": 200,
+      "capturedAt": "2026-11-11T12:57:32.726Z",
+      "currency": "USD",
+      "total": "4999.00",
+      "available": "4999.00"
+    }
+  }
+}

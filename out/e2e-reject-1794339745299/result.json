@@ -1,0 +1,58 @@
+{
+  "caseId": "e2e-reject-1794339745299",
+  "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\data\\submissions\\e2e-reject-1794339745299",
+  "timestamp": "2026-11-10T19:42:40.040Z",
+  "models": {
+    "criteria_generator": "gemini-3.5-flash-lite",
+    "code_review_judge": "gemini-3.5-flash-lite"
+  },
+  "decision": "escalate",
+  "failingCriteria": [],
+  "evidence": [],
+  "outcomes": [
+    {
+      "id": "C1",
+      "method": "test",
+      "result": "pass",
+      "evidence": [
+        {
+          "name": "creates an order with its total",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-1"
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "method": "test",
+      "result": "pass",
+      "evidence": [
+        {
+          "name": "rejects a negative quantity",
+          "status": "passed",
+          "failureMessage": "",
+          "requirementId": "REQ-2"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "method": "test",
+      "result": "unclear",
+      "evidence": []
+    },
+    {
+      "id": "C4",
+      "method": "test",
+      "result": "unclear",
+      "evidence": []
+    },
+    {
+      "id": "C5",
+      "method": "test",
+      "result": "unclear",
+      "evidence": []
+    }
+  ]
+}

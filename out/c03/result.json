@@ -1,10 +1,10 @@
 {
   "caseId": "c03",
   "submissionPath": "C:\\Users\\elbaz\\PayPalAI\\PayPalAI\\testset\\cases\\c01\\reference",
-  "timestamp": "2026-11-07T17:32:26.229Z",
+  "timestamp": "2026-11-11T13:29:20.093Z",
   "models": {
     "criteria_generator": "gemini-3.5-flash-lite",
-    "code_review_judge": "gemini-3.8-flash"
+    "code_review_judge": "gemini-3.5-flash-lite"
   },
   "decision": "escalate",
   "failingCriteria": [],

@@ -5,12 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayPalApiError = exports.PAYPAL_BASE_URL = void 0;
 exports.resetPayPalTokenCache = resetPayPalTokenCache;
+exports.paypalRequestWithStatus = paypalRequestWithStatus;
 exports.paypalRequest = paypalRequest;
 const node_crypto_1 = __importDefault(require("node:crypto"));
 const env_1 = require("../env");
 (0, env_1.loadEnvironment)();
 exports.PAYPAL_BASE_URL = (process.env.PAYPAL_API_BASE ?? "https://api-m.sandbox.paypal.com").trim().replace(/\/+$/, "");
 let tokenCache;
+const timeoutMs = 15_000;
+const retryDelays = [2_000, 4_000, 8_000];
 class PayPalApiError extends Error {
     status;
     body;
@@ -37,12 +40,32 @@ function safeError(status, body) {
         return new Error("PayPal sandbox client authentication failed. Use the REST app Client ID and Secret from the same PayPal Developer Sandbox app, and regenerate the Secret if needed.");
     return new PayPalApiError(status, body.replace(/Bearer\s+\S+/gi, "******").replace(/(client_secret|access_token|client_id)["'=:\s]+[^,\s}]+/gi, "$1=[redacted]"));
 }
+async function requestWithRetry(url, init) {
+    for (let attempt = 0;; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            const response = await fetch(url, { ...init, signal: controller.signal });
+            if (response.status < 500 || attempt >= retryDelays.length)
+                return response;
+            await new Promise((resolve) => setTimeout(resolve, retryDelays[attempt]));
+        }
+        catch (error) {
+            if (attempt >= retryDelays.length)
+                throw error;
+            await new Promise((resolve) => setTimeout(resolve, retryDelays[attempt]));
+        }
+        finally {
+            clearTimeout(timer);
+        }
+    }
+}
 async function accessToken() {
     const now = Date.now();
     if (tokenCache && tokenCache.expiresAt > now + 60_000)
         return tokenCache.accessToken;
     const { clientId, clientSecret } = credentials();
-    const response = await fetch(`${exports.PAYPAL_BASE_URL}/v1/oauth2/token`, {
+    const response = await requestWithRetry(`${exports.PAYPAL_BASE_URL}/v1/oauth2/token`, {
         method: "POST",
         headers: {
             Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
@@ -61,7 +84,7 @@ async function accessToken() {
     return parsed.access_token;
 }
 function resetPayPalTokenCache() { tokenCache = undefined; }
-async function paypalRequest(method, endpoint, body) {
+async function paypalRequestWithStatus(method, endpoint, body, requestId = node_crypto_1.default.randomUUID()) {
     if (!endpoint.startsWith("/"))
         throw new Error("PayPal endpoint must be relative to the sandbox host.");
     const token = await accessToken();
@@ -69,12 +92,15 @@ async function paypalRequest(method, endpoint, body) {
     if (body !== undefined)
         headers["Content-Type"] = "application/json";
     if (method === "POST")
-        headers["PayPal-Request-Id"] = node_crypto_1.default.randomUUID();
-    const response = await fetch(`${exports.PAYPAL_BASE_URL}${endpoint}`, {
+        headers["PayPal-Request-Id"] = requestId;
+    const response = await requestWithRetry(`${exports.PAYPAL_BASE_URL}${endpoint}`, {
         method, headers, body: body === undefined ? undefined : JSON.stringify(body)
     });
     const responseBody = await response.text();
     if (!response.ok)
         throw safeError(response.status, responseBody);
-    return responseBody ? JSON.parse(responseBody) : {};
+    return { value: responseBody ? JSON.parse(responseBody) : {}, status: response.status };
+}
+async function paypalRequest(method, endpoint, body, requestId = node_crypto_1.default.randomUUID()) {
+    return (await paypalRequestWithStatus(method, endpoint, body, requestId)).value;
 }

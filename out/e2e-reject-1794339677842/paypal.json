@@ -1,0 +1,22 @@
+{
+  "caseId": "e2e-reject-1794339677842",
+  "amount": "10.00",
+  "currency": "USD",
+  "createdAt": "2026-11-10T19:41:24.337Z",
+  "milestones": [],
+  "paypalResponses": [],
+  "operations": [
+    {
+      "operation": "create-order",
+      "requestId": "3744866e-12a2-4093-b34b-79debfce50ea",
+      "status": "COMPLETED",
+      "recordedAt": "2026-11-10T19:41:24.337Z"
+    }
+  ],
+  "orderId": "35H62803YY677515J",
+  "orderStatus": "COMPLETED",
+  "authorizationId": "3DE21897N8143874H",
+  "authorizationStatus": "CREATED",
+  "authorizationExpirationTime": "2026-12-09T19:41:26Z",
+  "authorizedAt": "2026-11-10T19:41:29.832Z"
+}
