@@ -95,7 +95,7 @@ If a model answers HTTP 404, 429, 500, or 503 (for example, "This model is
 currently experiencing high demand"), the next model is tried; if all fail, the
 whole list is tried once more after a short pause. Other errors stop immediately.
 
-## Render deployment
+## Render deployment (***Render was not implemented in time***)
 
 `render.yaml` defines one Node 20 web service, the `/health` check, build/start
 commands, a generated session secret, and secret environment variables. Connect
